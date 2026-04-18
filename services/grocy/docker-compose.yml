@@ -1,0 +1,30 @@
+# Grocy - zarządzanie gospodarstwem domowym (zakupy, spiżarnia, przepisy)
+#
+# Uruchomienie:
+#   docker compose up -d
+#
+# Dostęp:
+#   http://grocy.home.local  (przez NPM)
+#
+# Domyślne dane logowania:
+#   login: admin
+#   hasło: admin  ← zmień po pierwszym logowaniu!
+
+services:
+  grocy:
+    image: lscr.io/linuxserver/grocy:latest
+    container_name: grocy
+    restart: unless-stopped
+    environment:
+      TZ: ${TZ}
+      PUID: 1000
+      PGID: 1000
+    volumes:
+      - ../../data/grocy:/config
+    networks:
+      - proxy
+
+networks:
+  proxy:
+    name: proxy
+    external: true
