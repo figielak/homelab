@@ -1,0 +1,33 @@
+# Vaultwarden - self-hosted menedżer haseł (kompatybilny z Bitwarden)
+#
+# Przed uruchomieniem:
+#   1. Wygeneruj admin token: openssl rand -base64 48
+#   2. Ustaw VAULTWARDEN_ADMIN_TOKEN w ../../.env
+#
+# Uruchomienie:
+#   docker compose --env-file ../../.env up -d
+#
+# Dostęp:
+#   http://vaultwarden.home.local        (przez NPM)
+#   http://vaultwarden.home.local/admin  (panel admina)
+
+services:
+  vaultwarden:
+    image: vaultwarden/server:latest
+    container_name: vaultwarden
+    restart: unless-stopped
+    environment:
+      TZ: ${TZ}
+      DOMAIN: "https://vaultwarden.${DOMAIN}"
+      ADMIN_TOKEN: ${VAULTWARDEN_ADMIN_TOKEN}
+      SIGNUPS_ALLOWED: "false"   # wyłącz po założeniu konta
+      WEBSOCKET_ENABLED: "true"
+    volumes:
+      - ../../data/vaultwarden:/data
+    networks:
+      - proxy
+
+networks:
+  proxy:
+    name: proxy
+    external: true
