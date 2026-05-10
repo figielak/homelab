@@ -1,0 +1,40 @@
+services:
+  tandoor:
+    image: vabene1111/recipes:latest
+    container_name: tandoor
+    restart: unless-stopped
+    depends_on:
+      - db
+    ports:
+      - "8080:8080"
+    environment:
+      SECRET_KEY: "af2a571a101fd650897f59a56a1a41b616537f648582be38d9528b1825157feb"
+      DB_ENGINE: django.db.backends.postgresql
+      POSTGRES_HOST: db
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: tandoor
+      POSTGRES_PASSWORD: Homelab000
+      POSTGRES_DB: tandoor
+    volumes:
+      - ../../data/tandoor/static:/opt/recipes/staticfiles
+      - ../../data/tandoor/media:/opt/recipes/mediafiles
+    networks:
+      - proxy
+
+  db:
+    image: postgres:16
+    container_name: tandoor_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: tandoor
+      POSTGRES_PASSWORD: Homelab000
+      POSTGRES_DB: tandoor
+    volumes:
+      - ../../data/tandoor/db:/var/lib/postgresql/data
+    networks:
+      - proxy
+
+networks:
+  proxy:
+    name: proxy
+    external: true
