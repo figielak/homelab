@@ -1,3 +1,14 @@
+## Informacje
+
+
+## Instalacja
+
+1. Zainstaluj Docker i Docker Compose
+2. Sklonuj repozytorium do `/opt/homelab`
+3. Skopiuj pliki '.env'
+4. Uruchom proxy: `docker compose up -d`
+5. Uruchom wybrane usługi z katalogu `services`
+
 ## Uruchamianie
 
 **Uruchomienie proxy**

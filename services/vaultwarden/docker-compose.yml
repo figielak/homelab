@@ -2,10 +2,10 @@
 #
 # Przed uruchomieniem:
 #   1. Wygeneruj admin token: openssl rand -base64 48
-#   2. Ustaw VAULTWARDEN_ADMIN_TOKEN w ../../.env
+#   2. Ustaw VAULTWARDEN_ADMIN_TOKEN w .env
 #
 # Uruchomienie:
-#   docker compose --env-file ../../.env up -d
+#   docker compose up -d
 #
 # Dostęp:
 #   http://vaultwarden.home.local        (przez NPM)

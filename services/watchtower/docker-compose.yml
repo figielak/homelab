@@ -1,10 +1,10 @@
 # Watchtower - automatyczne aktualizacje obrazów Docker
 #
 # Monitoruje uruchomione kontenery i aktualizuje je gdy pojawi się nowy obraz.
-# Domyślnie sprawdza o 3:00 w nocy (konfiguracja w ../../.env)
+# Domyślnie sprawdza o 3:00 w nocy (konfiguracja w .env)
 #
 # Uruchomienie:
-#   docker compose --env-file ../../.env up -d
+#   docker compose up -d
 
 services:
   watchtower:
