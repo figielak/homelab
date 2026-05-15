@@ -21,6 +21,7 @@ services:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
       - ../../data/tandoor/static:/opt/recipes/staticfiles:ro
       - ../../data/tandoor/media:/opt/recipes/mediafiles:ro
+      - tandoor_socket:/tmp
     networks:
       - proxy
       - internal
@@ -45,6 +46,7 @@ services:
     volumes:
       - ../../data/tandoor/static:/opt/recipes/staticfiles
       - ../../data/tandoor/media:/opt/recipes/mediafiles
+      - tandoor_socket:/tmp
     networks:
       - internal
 
@@ -60,6 +62,9 @@ services:
       - ../../data/tandoor/db:/var/lib/postgresql/data
     networks:
       - internal
+
+volumes:
+  tandoor_socket:
 
 networks:
   proxy:
