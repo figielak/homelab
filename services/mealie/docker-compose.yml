@@ -1,0 +1,68 @@
+# Mealie - zarządzanie przepisami kulinarnymi
+#
+# Przed uruchomieniem:
+#   1. Skopiuj .env.example do .env i ustaw POSTGRES_PASSWORD
+#   2. Zmień DEFAULT_PASSWORD po pierwszym logowaniu!
+#
+# Uruchomienie:
+#   docker compose up -d
+#
+# Dostęp:
+#   http://mealie.home.local  (przez NPM → mealie:9000)
+#
+# Domyślne dane logowania:
+#   email:  changeme@example.com  ← ustaw w .env
+#   hasło:  MyPassword            ← ustaw w .env, zmień po zalogowaniu!
+#
+# Backup:
+#   Panel → Administration → Backups → Create
+#   Pliki backupu: ../../data/mealie/data/backups/
+
+services:
+  mealie:
+    image: ghcr.io/mealie-recipes/mealie:latest
+    container_name: mealie
+    restart: unless-stopped
+    depends_on:
+      - db
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: ${TZ}
+      BASE_URL: ${BASE_URL}
+      DB_ENGINE: postgres
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_SERVER: db
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: ${POSTGRES_DB}
+      DEFAULT_EMAIL: ${MEALIE_DEFAULT_EMAIL}
+      DEFAULT_PASSWORD: ${MEALIE_DEFAULT_PASSWORD}
+      TOKEN_TIME: 48
+      API_DOCS: "false"
+    volumes:
+      - ../../data/mealie/data:/app/data
+    networks:
+      - proxy
+      - internal
+
+  db:
+    image: postgres:16
+    container_name: mealie_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - ../../data/mealie/db:/var/lib/postgresql/data
+    networks:
+      - internal
+
+networks:
+  proxy:
+    name: proxy
+    external: true
+  internal:
+    name: mealie_internal
+    internal: true

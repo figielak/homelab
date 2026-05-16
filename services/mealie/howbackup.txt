@@ -1,0 +1,11 @@
+## Method 1: Using Mealie's built-in backup feature
+- Go to Administration → Backups
+- Click "Create Backup"
+- Download the backup file from ../../data/mealie/data/backups/
+
+## Method 2: Manual backup using docker exec
+- docker exec mealie mealie backup
+- The backup file will be in /app/data/backups/ directory
+- Copy it to your host machine using docker cp
+
+## Method 3: 
