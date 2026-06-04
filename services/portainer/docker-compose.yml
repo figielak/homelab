@@ -5,7 +5,7 @@
 #
 # Dostęp:
 #   http://portainer.home.local  (przez NPM)
-#   lub bezpośrednio: http://<ip-maszyny>:9000
+#   lub bezpośrednio: http://192.168.10.10:9000
 
 services:
   portainer:

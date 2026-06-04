@@ -1,7 +1,7 @@
 # AdGuard Home - lokalny DNS + blokowanie reklam
 #
 # Po uruchomieniu dokończ konfigurację przez wizard:
-#   http://<ip-maszyny>:3000
+#   http://192.168.10.10:3000
 #
 # Wizard ustawi port 53 (DNS) i 80/443 (panel).
 # Panel po konfiguracji będzie dostępny na porcie 3001 (żeby nie kolidować z NPM).

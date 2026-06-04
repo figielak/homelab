@@ -1,0 +1,23 @@
+http:
+  middlewares:
+
+    # Security headers — dodajesz do każdego serwisu
+    secure-headers:
+      headers:
+        stsSeconds: 31536000
+        browserXssFilter: true
+        contentTypeNosniff: true
+        forceSTSHeader: true
+        frameDeny: true
+
+    # Ograniczenie dostępu tylko do sieci Tailscale
+    tailscale-only:
+      ipAllowList:
+        sourceRange:
+          - "100.64.0.0/10"   # zakres IP Tailscale
+
+    # Rate limiting — ochrona przed brute force
+    rate-limit:
+      rateLimit:
+        average: 100
+        burst: 50

@@ -1,0 +1,14 @@
+services:
+  ntfy:
+    image: binwiederhier/ntfy:latest
+    container_name: ntfy
+    restart: unless-stopped
+    networks:
+      - proxy
+      - monitoring
+
+networks:
+  proxy:
+    external: true
+  monitoring:
+    external: true
