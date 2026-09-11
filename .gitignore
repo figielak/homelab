@@ -1,8 +1,9 @@
-data/
-**/.env
+# sekrety
 .env
 
-*.key
-*.pem
+# dane aplikacji — nigdy w repo (siatka bezpieczeństwa, dane i tak żyją w /srv)
+data/
 
-__pycache__
+# śmieci
+.DS_Store
+*.swp
