@@ -119,10 +119,13 @@ Nieistniejące jeszcze ścieżki: `/srv/homelab/data`, `/mnt/hdd`, `/mnt/hdd/bac
 - **Grupa `docker` = uprawnienia roota** — dostęp do `/var/run/docker.sock`
   pozwala zamontować `/` do kontenera. Przyjęte świadomie, bo `sudo docker`
   przy pracy z compose'em jest nieużywalne. Zobacz [[figielak]].
-- **Brak jakiegokolwiek backupu** — HDD nie jest podłączony. Do tego czasu
-  na `castle` nie trafia nic, czego nie da się odtworzyć. #do-zrobienia
-- **Host na Wi-Fi** — `eth0` odłączony. Każde zapytanie DNS w domu pójdzie przez
-  Wi-Fi, gdy wejdzie AdGuard. Rezerwacja DHCP jest przypięta do MAC-a `wlan0`;
+- **Brak jakiegokolwiek backupu, a dane nieodtwarzalne już są.** HDD nie jest
+  podłączony, więc krok 6 stoi. Od 2026-09-21 [[mealie]] trzyma przepisy
+  wpisane ręcznie — istnieją w jednym egzemplarzu, na jednym dysku.
+  Pad SSD = ich utrata. **To najpoważniejsze otwarte ryzyko tego homelaba.**
+  #do-zrobienia
+- **Host na Wi-Fi** — `eth0` odłączony. Każde zapytanie DNS w domu idzie przez
+  Wi-Fi. Rezerwacja DHCP jest przypięta do MAC-a `wlan0`;
   po przepięciu na kabel `eth0` dostanie inny adres i wymaga drugiej rezerwacji.
 - **`castle` jest teraz pojedynczym punktem awarii DNS dla całego domu.**
   Router podaje `192.168.10.10` jako podstawowy resolver, `1.1.1.1` jako
