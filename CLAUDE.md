@@ -42,9 +42,10 @@ Złamanie którejkolwiek zgłaszaj **wprost**, zanim zaproponujesz rozwiązanie:
 - **4 GB RAM na wszystko.** Przy każdej nowej usłudze podaj szacowane zużycie
   i odnieś je do tego, co już działa.
 - **Jeden host = jeden zestaw portów.** Sprawdź kolizje w rejestrze portów.
-- Caddy zajmuje 80 i 443. AdGuard działa w `network_mode: host` i wymaga portu 53
-  (konieczne `DNSStubListener=no` w `systemd-resolved`); jego panel musi stać na
-  innym porcie niż 80.
+- Caddy zajmuje 80 i 443 (tcp) oraz 443/udp dla HTTP/3. AdGuard działa
+  w `network_mode: host`, trzyma port 53 i ma panel na 3000.
+  Na `castle` `systemd-resolved` nie działa, więc `DNSStubListener=no`
+  nie było potrzebne — warunek wraca, jeśli ktoś je kiedyś włączy.
 
 ## Jak odpowiadać
 
@@ -78,7 +79,9 @@ tu format ma znaczenie, więc proponuj gotową treść.
 
 - Ścieżki: repo `/opt/homelab`, dane `/srv/homelab/data/<stack>/`, HDD `/mnt/hdd`,
   backupy `/mnt/hdd/backups`.
-- Domena wewnętrzna `*.home.arpa`, rozwiązywana przez AdGuard (DNS rewrite).
+- Domena wewnętrzna `*.home.figielak.dev`, rozwiązywana przez AdGuard
+  (DNS rewrite → `192.168.10.10`). Brak publicznych rekordów A; certyfikat
+  wildcard od Let's Encrypt przez DNS-01 w Cloudflare.
 - Wspólna sieć Dockera `proxy` dla Caddy i usług za nim.
 - Nazwy kontenerów i katalogów: `kebab-case`, identyczne z nazwą stacku.
 - Commity: `<scope>: <opis>`, np. `mealie: bump to 2.1.0`.

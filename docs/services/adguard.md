@@ -1,7 +1,7 @@
 # AdGuard Home
 
 DNS dla całej sieci domowej z blokowaniem reklam i trackerów. Pełni też rolę
-wewnętrznego resolvera dla domeny `*.home.arpa` (DNS rewrite → [[castle]]).
+wewnętrznego resolvera dla `*.home.figielak.dev` (DNS rewrite → [[castle]]).
 
 #usługa #dns
 
@@ -17,7 +17,7 @@ serwera DHCP, żeby sensownie działać.
 | | |
 |---|---|
 | Host | [[castle]] |
-| Panel | `http://192.168.10.10:3000`, docelowo `http://adguard.home.arpa` przez Caddy |
+| Panel | `https://adguard.home.figielak.dev` przez [[caddy]]; nadal osiągalny też bezpośrednio na `http://192.168.10.10:3000` |
 | Porty | 53 tcp/udp (DNS), 3000 tcp (panel) |
 | Dane | `/srv/homelab/data/adguard/{work,conf}` |
 | Stack | `stacks/adguard/` |
@@ -131,3 +131,5 @@ dig @192.168.10.10 doubleclick.net +short    # powinno zwrocic 0.0.0.0 lub nic
   ustalono, że dane należą do `root`, nie do UID 1000
 - 2026-09-21 — router przepięty: AdGuard jako podstawowy DNS dla całej sieci,
   `1.1.1.1` jako zapasowy; rozwiązywanie zweryfikowane przez `dig`
+- 2026-09-21 — dodany DNS rewrite `*.home.figielak.dev` → `192.168.10.10`;
+  panel wystawiony przez [[caddy]] pod `adguard.home.figielak.dev`

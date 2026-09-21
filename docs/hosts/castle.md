@@ -33,7 +33,9 @@ przed kolizjami.
 |---|---|---|---|---|
 | 22 | tcp | SSH | `sshd` | tylko klucz, root zablokowany |
 | 53 | tcp + udp | DNS | `AdGuardHome` | `*:53`, wszystkie interfejsy; `network_mode: host` |
-| 3000 | tcp | panel AdGuard | `AdGuardHome` | docelowo za Caddy jako `adguard.home.arpa` |
+| 80 | tcp | Caddy | kontener `caddy` | przekierowanie na HTTPS |
+| 443 | tcp + udp | Caddy | kontener `caddy` | udp = HTTP/3 (QUIC) |
+| 3000 | tcp | panel AdGuard | `AdGuardHome` | wystawiony jako `adguard.home.figielak.dev`; **nadal osiągalny bezpośrednio** |
 | 5353 | udp | mDNS | `avahi-daemon` | **nie koliduje z 53** |
 | 32929, 49401 | udp | mDNS | `avahi-daemon` | porty efemeryczne, zmienne |
 
@@ -43,9 +45,8 @@ portów; jedynym wyjątkiem jest AdGuard w trybie `host`. Zobacz [[adguard]].
 
 ### Zarezerwowane (planowane, jeszcze nie zajęte)
 
-| Port | Proto | Usługa | Uwagi |
-|---|---|---|---|
-| 80, 443 | tcp | Caddy | jedyne wejście do usług |
+Brak. Kolejne usługi idą za Caddy i **nie publikują portów na hoście** —
+wystarczy dodać blok w `Caddyfile` i podłączyć kontener do sieci `proxy`.
 
 **Port 53 jest wolny.** `systemd-resolved` nie działa na tym hoście —
 `/etc/resolv.conf` generuje NetworkManager i wskazuje wprost na 8.8.8.8 i 1.1.1.1.
@@ -85,7 +86,8 @@ usłudze odnotuj tu przydział.
 | Stack | `mem_limit` | Zmierzone | Status |
 |---|---|---|---|
 | `adguard` | 256 MiB | ~50 MiB | działa od 2026-09-21 |
-| **Przydzielone razem** | **256 MiB** | ~50 MiB | pozostaje ~3,1 GiB limitu |
+| `caddy` | 256 MiB | do zmierzenia | działa od 2026-09-21 |
+| **Przydzielone razem** | **512 MiB** | — | pozostaje ~2,9 GiB limitu |
 
 ## Stan wdrożenia
 
@@ -96,7 +98,7 @@ Kolejność z `CLAUDE.md`:
 | 1. Baza: OS, boot z SSD, hardening SSH, HDD, Docker | **częściowo** — OS ✓, boot z SSD ✓, SSH ✓, Docker ✓, **HDD ✗ (brak sprzętu)** |
 | 2. Repo + szkielet dokumentacji | w trakcie — `/opt/homelab` sklonowane |
 | 3. AdGuard Home + drugi DNS w routerze | **gotowe** |
-| 4. Caddy + sieć `proxy` | nie rozpoczęte |
+| 4. Caddy + sieć `proxy` + domena wewnętrzna | **gotowe** |
 | 5. Mealie | nie rozpoczęte |
 | 6. Backup restic | zablokowane brakiem HDD |
 | 7–9. Monitoring, Tailscale, Syncthing | nie rozpoczęte |
@@ -148,6 +150,9 @@ diff /opt/homelab/hosts/castle/etc/ssh/sshd_config.d/10-homelab-hardening.conf \
   ustalono, że port 53 jest wolny (brak `systemd-resolved`)
 - 2026-09-21 — wyłączone logowanie roota po SSH
   (`/etc/ssh/sshd_config.d/10-homelab-hardening.conf`)
+- 2026-09-21 — uruchomiony Caddy (własny build 2.11.4 + cloudflare v0.2.4);
+  zajęte 80 tcp, 443 tcp/udp; utworzona sieć `proxy`; wydany certyfikat
+  wildcard `*.home.figielak.dev`; panel AdGuarda wystawiony przez proxy
 - 2026-09-21 — router przepięty na `castle` jako podstawowy DNS,
   `1.1.1.1` jako zapasowy; krok 3 zamknięty
 - 2026-09-21 — uruchomiony AdGuard Home `v0.107.79`; zajęte 53 tcp/udp i 3000 tcp;
