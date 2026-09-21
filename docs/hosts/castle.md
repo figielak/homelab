@@ -87,8 +87,8 @@ usłudze odnotuj tu przydział.
 |---|---|---|---|
 | `adguard` | 256 MiB | 76 MiB | działa od 2026-09-21 |
 | `caddy` | 256 MiB | 55 MiB | działa od 2026-09-21 |
-| `mealie` | 1024 MiB | do zmierzenia | działa od 2026-09-21 |
-| **Przydzielone razem** | **1,5 GiB** | — | pozostaje ~2,2 GiB |
+| `mealie` | 1024 MiB | ~250 MiB | działa od 2026-09-21 |
+| **Przydzielone razem** | **1,5 GiB** | **~350 MiB** | pozostaje ~2,2 GiB limitu |
 
 Pomiary ze stanu ustalonego (po restarcie, z załadowanymi listami filtrów).
 Tuż po `docker compose up` wartości są o połowę niższe i wprowadzają w błąd.
