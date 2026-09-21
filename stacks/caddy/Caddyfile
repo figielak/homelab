@@ -26,6 +26,12 @@
 		reverse_proxy {$HOST_IP}:3000
 	}
 
+	@mealie host mealie.home.figielak.dev
+	handle @mealie {
+		# Mealie nalezy do sieci proxy, wiec adresujemy go nazwa kontenera.
+		reverse_proxy mealie:9000
+	}
+
 	# Nazwa pasujaca do wildcardu, ale nieprzypisana do zadnej uslugi.
 	# Bez tego Caddy zwrocilby pusta odpowiedz i diagnostyka bylaby trudniejsza.
 	handle {

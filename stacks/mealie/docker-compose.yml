@@ -1,0 +1,39 @@
+services:
+  mealie:
+    image: ghcr.io/mealie-recipes/mealie:v3.27.0
+    container_name: mealie
+    restart: unless-stopped
+
+    # Limit jest tu wymogiem, nie ostroznoscia: dokumentacja Mealie
+    # ostrzega, ze Python alokuje pamiec „na zapas" proporcjonalnie
+    # do tego, ile widzi w systemie.
+    mem_limit: 1g
+
+    environment:
+      # Rejestracja wylaczona — konta zakladasz z panelu administratora.
+      ALLOW_SIGNUP: "false"
+      # Dane naleza do figielak (UID 1000), inaczej niz w AdGuardzie.
+      PUID: 1000
+      PGID: 1000
+      TZ: Europe/Warsaw
+      # Bez tego Mealie generuje linki na zly adres (m.in. w mailach
+      # i przy udostepnianiu przepisow).
+      BASE_URL: https://mealie.home.figielak.dev
+
+    volumes:
+      - ${DATA_ROOT}/mealie:/app/data
+
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:9000/api/app/about > /dev/null || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      # Pierwszy start migruje baze — potrzebuje wiecej czasu niz kolejne.
+      start_period: 90s
+
+    networks:
+      - proxy
+
+networks:
+  proxy:
+    external: true
