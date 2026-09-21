@@ -124,8 +124,6 @@ Nieistniejące jeszcze ścieżki: `/srv/homelab/data`, `/mnt/hdd`, `/mnt/hdd/bac
 - **Host na Wi-Fi** — `eth0` odłączony. Każde zapytanie DNS w domu pójdzie przez
   Wi-Fi, gdy wejdzie AdGuard. Rezerwacja DHCP jest przypięta do MAC-a `wlan0`;
   po przepięciu na kabel `eth0` dostanie inny adres i wymaga drugiej rezerwacji.
-- **EEPROM nieaktualny** — CURRENT 2026-01-09, LATEST 2026-05-17.
-  `sudo rpi-eeprom-update -a` + restart. Zrób przed wdrożeniem usług. #do-zrobienia
 - **`castle` jest teraz pojedynczym punktem awarii DNS dla całego domu.**
   Router podaje `192.168.10.10` jako podstawowy resolver, `1.1.1.1` jako
   zapasowy. Awaria Pi oznacza brak filtrowania, ale nie brak internetu —
@@ -179,6 +177,8 @@ diff /opt/homelab/hosts/castle/etc/ssh/sshd_config.d/10-homelab-hardening.conf \
 - 2026-09-21 — uruchomiony Mealie `v3.27.0` za Caddy jako
   `mealie.home.figielak.dev`; dane w `/srv/homelab/data/mealie` (UID 1000).
   Pierwsza usługa z danymi nie do odtworzenia — backupu nadal brak
+- 2026-09-21 — EEPROM zaktualizowany do wersji z 2026-05-17 (`up to date`);
+  rejestr portów zweryfikowany — AdGuard trzyma wyłącznie 53 tcp/udp i 3000 tcp
 - 2026-09-21 — włączony cgroup pamięci w `cmdline.txt` + restart;
   kontenery odtworzone przez `--force-recreate`, `mem_limit` wreszcie
   egzekwowany. Wcześniej limity w obu stackach były martwe.
