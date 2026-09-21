@@ -1,0 +1,34 @@
+{
+	# Adres do powiadomien Let's Encrypt o wygasajacych certyfikatach.
+	email {$ACME_EMAIL}
+}
+
+# Jeden certyfikat wildcard obsluguje wszystkie uslugi.
+#
+# Walidacja DNS-01: Caddy dokłada tymczasowy rekord TXT w Cloudflare
+# i kasuje go po weryfikacji. Nie wymaga wystawiania portu 80 na swiat
+# ani zadnych stalych rekordow A w publicznym DNS.
+#
+# W logach Certificate Transparency widac tylko *.home.figielak.dev,
+# a nie liste uslug — to swiadomy powod, dla ktorego bierzemy wildcard
+# zamiast certyfikatu na kazda nazwe osobno.
+*.home.figielak.dev {
+	tls {
+		dns cloudflare {env.CF_API_TOKEN}
+	}
+
+	@adguard host adguard.home.figielak.dev
+	handle @adguard {
+		# AdGuard dziala w network_mode: host, wiec nie nalezy do sieci
+		# proxy i nie da sie go zaadresowac nazwa kontenera.
+		# Adres hosta pochodzi z .env — przy migracji zmienia sie
+		# jedna zmienna, nie ten plik.
+		reverse_proxy {$HOST_IP}:3000
+	}
+
+	# Nazwa pasujaca do wildcardu, ale nieprzypisana do zadnej uslugi.
+	# Bez tego Caddy zwrocilby pusta odpowiedz i diagnostyka bylaby trudniejsza.
+	handle {
+		respond "Brak takiej uslugi w homelabie" 404
+	}
+}

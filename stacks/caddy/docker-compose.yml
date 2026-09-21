@@ -1,0 +1,47 @@
+services:
+  caddy:
+    build:
+      context: .
+      args:
+        CADDY_VERSION: "2.11.4"
+        CLOUDFLARE_PLUGIN_VERSION: "v0.2.4"
+    # Nazwa lokalnie zbudowanego obrazu. Wersje w tagu sa celowo jawne,
+    # zeby `docker images` mowilo, co w srodku siedzi.
+    image: homelab/caddy:2.11.4-cf0.2.4
+    container_name: caddy
+    restart: unless-stopped
+
+    mem_limit: 256m
+
+    # Jedyny kontener w homelabie, ktory publikuje porty na hoscie.
+    # To on jest wejsciem do wszystkich uslug.
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"   # HTTP/3 (QUIC)
+
+    environment:
+      CF_API_TOKEN: ${CF_API_TOKEN}
+      ACME_EMAIL: ${ACME_EMAIL}
+      HOST_IP: ${HOST_IP}
+
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      # /data trzyma certyfikaty i klucz konta ACME — to jest do backupu.
+      - ${DATA_ROOT}/caddy/data:/data
+      - ${DATA_ROOT}/caddy/config:/config
+
+    healthcheck:
+      # Admin API Caddy slucha na 2019 tylko wewnatrz kontenera.
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1:2019/config/ || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+    networks:
+      - proxy
+
+networks:
+  proxy:
+    external: true
