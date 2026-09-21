@@ -1,0 +1,24 @@
+services:
+  adguard:
+    image: adguard/adguardhome:v0.107.79
+    container_name: adguard
+    restart: unless-stopped
+
+    # Tryb host jest wymuszony przez port 53: AdGuard musi widzieć
+    # adresy zrodlowe zapytan, zeby dzialaly reguly per-klient.
+    # Konsekwencja: kontener NIE moze nalezec do sieci `proxy`.
+    # Caddy siega do niego po adresie hosta, nie po nazwie kontenera.
+    network_mode: host
+
+    mem_limit: 256m
+
+    volumes:
+      - ${DATA_ROOT}/adguard/work:/opt/adguardhome/work
+      - ${DATA_ROOT}/adguard/conf:/opt/adguardhome/conf
+
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1:3000 || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
