@@ -85,9 +85,12 @@ usłudze odnotuj tu przydział.
 
 | Stack | `mem_limit` | Zmierzone | Status |
 |---|---|---|---|
-| `adguard` | 256 MiB | ~50 MiB | działa od 2026-09-21 |
-| `caddy` | 256 MiB | do zmierzenia | działa od 2026-09-21 |
-| **Przydzielone razem** | **512 MiB** | — | pozostaje ~2,9 GiB limitu |
+| `adguard` | 256 MiB | 76 MiB | działa od 2026-09-21 |
+| `caddy` | 256 MiB | 55 MiB | działa od 2026-09-21 |
+| **Przydzielone razem** | **512 MiB** | **~131 MiB** | pozostaje ~2,9 GiB limitu |
+
+Pomiary ze stanu ustalonego (po restarcie, z załadowanymi listami filtrów).
+Tuż po `docker compose up` wartości są o połowę niższe i wprowadzają w błąd.
 
 ## Stan wdrożenia
 
@@ -127,6 +130,28 @@ Nieistniejące jeszcze ścieżki: `/srv/homelab/data`, `/mnt/hdd`, `/mnt/hdd/bac
   zapasowy. Awaria Pi oznacza brak filtrowania, ale nie brak internetu —
   to świadomie przyjęty kompromis.
 
+## Parametry jądra
+
+`/boot/firmware/cmdline.txt` ma dopisane:
+
+```
+cgroup_enable=memory cgroup_memory=1
+```
+
+**Bez tego `mem_limit` w stackach jest ignorowany.** Raspberry Pi OS domyślnie
+wyłącza cgroup pamięci, a Docker przyjmuje wtedy `mem_limit` po cichu, bez
+egzekwowania go. Objaw: `docker stats` pokazuje `0B / 0B` albo limit równy
+całej pamięci hosta.
+
+**Po włączeniu cgroupa istniejące kontenery trzeba odtworzyć**
+(`docker compose up -d --force-recreate`). Sam restart hosta nie wystarczy —
+kontener startuje z konfiguracją zapisaną przy jego tworzeniu.
+
+Plik nie jest kopiowany do repo celowo: zawiera `root=PARTUUID=...` związany
+z konkretnym dyskiem. Przy odbudowie na nowym sprzęcie dopisz same powyższe
+parametry do istniejącej linii, nie nadpisuj całego pliku. Linia musi
+pozostać jedna.
+
 ## Pliki systemowe w repo
 
 Ręczne zmiany w konfiguracji systemu leżą w `hosts/castle/`, gdzie ścieżka
@@ -150,6 +175,10 @@ diff /opt/homelab/hosts/castle/etc/ssh/sshd_config.d/10-homelab-hardening.conf \
   ustalono, że port 53 jest wolny (brak `systemd-resolved`)
 - 2026-09-21 — wyłączone logowanie roota po SSH
   (`/etc/ssh/sshd_config.d/10-homelab-hardening.conf`)
+- 2026-09-21 — włączony cgroup pamięci w `cmdline.txt` + restart;
+  kontenery odtworzone przez `--force-recreate`, `mem_limit` wreszcie
+  egzekwowany. Wcześniej limity w obu stackach były martwe.
+  Zmierzone: AdGuard 76 MiB, Caddy 55 MiB
 - 2026-09-21 — uruchomiony Caddy (własny build 2.11.4 + cloudflare v0.2.4);
   zajęte 80 tcp, 443 tcp/udp; utworzona sieć `proxy`; wydany certyfikat
   wildcard `*.home.figielak.dev`; panel AdGuarda wystawiony przez proxy
