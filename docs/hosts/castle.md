@@ -87,7 +87,8 @@ usłudze odnotuj tu przydział.
 |---|---|---|---|
 | `adguard` | 256 MiB | 76 MiB | działa od 2026-09-21 |
 | `caddy` | 256 MiB | 55 MiB | działa od 2026-09-21 |
-| **Przydzielone razem** | **512 MiB** | **~131 MiB** | pozostaje ~2,9 GiB limitu |
+| `mealie` | 1024 MiB | do zmierzenia | działa od 2026-09-21 |
+| **Przydzielone razem** | **1,5 GiB** | — | pozostaje ~2,2 GiB |
 
 Pomiary ze stanu ustalonego (po restarcie, z załadowanymi listami filtrów).
 Tuż po `docker compose up` wartości są o połowę niższe i wprowadzają w błąd.
@@ -102,7 +103,7 @@ Kolejność z `CLAUDE.md`:
 | 2. Repo + szkielet dokumentacji | w trakcie — `/opt/homelab` sklonowane |
 | 3. AdGuard Home + drugi DNS w routerze | **gotowe** |
 | 4. Caddy + sieć `proxy` + domena wewnętrzna | **gotowe** |
-| 5. Mealie | nie rozpoczęte |
+| 5. Mealie | **gotowe** — wzorzec zwalidowany |
 | 6. Backup restic | zablokowane brakiem HDD |
 | 7–9. Monitoring, Tailscale, Syncthing | nie rozpoczęte |
 
@@ -175,6 +176,9 @@ diff /opt/homelab/hosts/castle/etc/ssh/sshd_config.d/10-homelab-hardening.conf \
   ustalono, że port 53 jest wolny (brak `systemd-resolved`)
 - 2026-09-21 — wyłączone logowanie roota po SSH
   (`/etc/ssh/sshd_config.d/10-homelab-hardening.conf`)
+- 2026-09-21 — uruchomiony Mealie `v3.27.0` za Caddy jako
+  `mealie.home.figielak.dev`; dane w `/srv/homelab/data/mealie` (UID 1000).
+  Pierwsza usługa z danymi nie do odtworzenia — backupu nadal brak
 - 2026-09-21 — włączony cgroup pamięci w `cmdline.txt` + restart;
   kontenery odtworzone przez `--force-recreate`, `mem_limit` wreszcie
   egzekwowany. Wcześniej limity w obu stackach były martwe.

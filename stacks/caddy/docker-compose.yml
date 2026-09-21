@@ -26,7 +26,11 @@ services:
       HOST_IP: ${HOST_IP}
 
     volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      # Montujemy KATALOG, nie pojedynczy plik. Bind mount pliku wiaze
+      # i-wezel, a `git pull` podmienia plik przez rename — kontener
+      # zostawalby wtedy ze stara wersja, a `caddy reload` udawalby sukces.
+      # Katalog wiaze sciezke, wiec podmiana pliku w srodku jest widoczna.
+      - ./config:/etc/caddy:ro
       # /data trzyma certyfikaty i klucz konta ACME — to jest do backupu.
       - ${DATA_ROOT}/caddy/data:/data
       - ${DATA_ROOT}/caddy/config:/config

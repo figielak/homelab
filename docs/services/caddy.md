@@ -127,7 +127,7 @@ Let's Encrypt.
 
 ## Dodanie nowej usługi za proxy
 
-W `Caddyfile`, wewnątrz bloku `*.home.figielak.dev`:
+W `stacks/caddy/config/Caddyfile`, wewnątrz bloku `*.home.figielak.dev`:
 
 ```caddyfile
 @mealie host mealie.home.figielak.dev
@@ -161,9 +161,17 @@ ponownie.
   wyprzedzeniem, więc realne ryzyko jest niskie.
 - **Build jest krokiem manualnym.** Po zmianie `ARG` w `Dockerfile` trzeba
   `docker compose build`, samo `up -d` nie przebuduje obrazu.
+- **Montujemy katalog `config/`, nie sam `Caddyfile`** — i tak musi zostać.
+  Bind mount pojedynczego pliku wiąże i-węzeł, a `git pull` podmienia pliki
+  przez `rename`, tworząc nowy i-węzeł. Kontener zostawał wtedy ze starą
+  treścią, a `caddy reload` raportował sukces po wczytaniu starego pliku —
+  objaw jest mylący, bo wszystko wygląda na działające.
+  Wpadliśmy w to 2026-09-21 przy dodawaniu [[mealie]].
 
 ## Log zmian
 
 - 2026-09-21 — stack utworzony; Caddy `2.11.4` + plugin `cloudflare v0.2.4`,
   build własny (gotowy obraz pluginu jest tylko `amd64`);
   DNS `figielak.dev` przeniesiony z name.com do Cloudflare
+- 2026-09-21 — `Caddyfile` przeniesiony do `config/`, montowany jako katalog
+  zamiast pojedynczego pliku (patrz „Znane problemy")
