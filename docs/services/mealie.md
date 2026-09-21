@@ -94,7 +94,7 @@ w healthchecku.
 
 ### Wystawienie przez proxy
 
-Blok w `stacks/caddy/Caddyfile` jest już na miejscu:
+Blok w `stacks/caddy/config/Caddyfile` jest już na miejscu:
 
 ```caddyfile
 @mealie host mealie.home.figielak.dev

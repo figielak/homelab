@@ -43,15 +43,16 @@ Docker nie zajmuje żadnego portu na hoście — `dockerd` słucha na gnieździe
 `/var/run/docker.sock`, nie na TCP. Kontenery aplikacyjne też nie publikują
 portów; jedynym wyjątkiem jest AdGuard w trybie `host`. Zobacz [[adguard]].
 
+**`systemd-resolved` na tym hoście nie działa.** `/etc/resolv.conf` generuje
+NetworkManager i wskazuje wprost na 8.8.8.8 i 1.1.1.1. Nie ma stub listenera
+na 127.0.0.53, dzięki czemu port 53 był wolny dla AdGuarda i `DNSStubListener=no`
+nie było potrzebne. Gdyby `systemd-resolved` kiedykolwiek zostało włączone,
+ten warunek wraca.
+
 ### Zarezerwowane (planowane, jeszcze nie zajęte)
 
 Brak. Kolejne usługi idą za Caddy i **nie publikują portów na hoście** —
 wystarczy dodać blok w `Caddyfile` i podłączyć kontener do sieci `proxy`.
-
-**Port 53 jest wolny.** `systemd-resolved` nie działa na tym hoście —
-`/etc/resolv.conf` generuje NetworkManager i wskazuje wprost na 8.8.8.8 i 1.1.1.1.
-Nie ma stub listenera na 127.0.0.53, więc `DNSStubListener=no` nie jest tu potrzebne.
-Jeśli `systemd-resolved` kiedykolwiek zostanie włączony, ten warunek wraca.
 
 ## Dyski
 
@@ -100,14 +101,15 @@ Kolejność z `CLAUDE.md`:
 | Krok | Stan |
 |---|---|
 | 1. Baza: OS, boot z SSD, hardening SSH, HDD, Docker | **częściowo** — OS ✓, boot z SSD ✓, SSH ✓, Docker ✓, **HDD ✗ (brak sprzętu)** |
-| 2. Repo + szkielet dokumentacji | w trakcie — `/opt/homelab` sklonowane |
+| 2. Repo + szkielet dokumentacji | **gotowe** |
 | 3. AdGuard Home + drugi DNS w routerze | **gotowe** |
 | 4. Caddy + sieć `proxy` + domena wewnętrzna | **gotowe** |
 | 5. Mealie | **gotowe** — wzorzec zwalidowany |
 | 6. Backup restic | zablokowane brakiem HDD |
 | 7–9. Monitoring, Tailscale, Syncthing | nie rozpoczęte |
 
-Nieistniejące jeszcze ścieżki: `/srv/homelab/data`, `/mnt/hdd`, `/mnt/hdd/backups`.
+Istnieje `/srv/homelab/data/` z podkatalogami `adguard/`, `caddy/`, `mealie/`.
+Nie istnieją `/mnt/hdd` ani `/mnt/hdd/backups` — czekają na podłączenie dysku.
 
 ## Znane odstępstwa i dług techniczny
 
@@ -172,27 +174,29 @@ diff /opt/homelab/hosts/castle/etc/ssh/sshd_config.d/10-homelab-hardening.conf \
 
 ## Log zmian
 
+Kolejność chronologiczna, najstarsze u góry.
+
 - 2026-09-11 — sklonowane repo do `/opt/homelab` (deploy key read-only)
 - 2026-09-21 — zebrany stan faktyczny hosta; rezerwacja DHCP `192.168.10.10`;
-  ustalono, że port 53 jest wolny (brak `systemd-resolved`)
+  ustalono, że `systemd-resolved` nie działa, więc port 53 jest wolny
 - 2026-09-21 — wyłączone logowanie roota po SSH
   (`/etc/ssh/sshd_config.d/10-homelab-hardening.conf`)
-- 2026-09-21 — uruchomiony Mealie `v3.27.0` za Caddy jako
-  `mealie.home.figielak.dev`; dane w `/srv/homelab/data/mealie` (UID 1000).
-  Pierwsza usługa z danymi nie do odtworzenia — backupu nadal brak
-- 2026-09-21 — EEPROM zaktualizowany do wersji z 2026-05-17 (`up to date`);
-  rejestr portów zweryfikowany — AdGuard trzyma wyłącznie 53 tcp/udp i 3000 tcp
-- 2026-09-21 — włączony cgroup pamięci w `cmdline.txt` + restart;
-  kontenery odtworzone przez `--force-recreate`, `mem_limit` wreszcie
-  egzekwowany. Wcześniej limity w obu stackach były martwe.
-  Zmierzone: AdGuard 76 MiB, Caddy 55 MiB
-- 2026-09-21 — uruchomiony Caddy (własny build 2.11.4 + cloudflare v0.2.4);
-  zajęte 80 tcp, 443 tcp/udp; utworzona sieć `proxy`; wydany certyfikat
-  wildcard `*.home.figielak.dev`; panel AdGuarda wystawiony przez proxy
-- 2026-09-21 — router przepięty na `castle` jako podstawowy DNS,
-  `1.1.1.1` jako zapasowy; krok 3 zamknięty
-- 2026-09-21 — uruchomiony AdGuard Home `v0.107.79`; zajęte 53 tcp/udp i 3000 tcp;
-  utworzone `/srv/homelab/data/adguard/` (właściciel `root`)
 - 2026-09-21 — zainstalowany Docker Engine 29.8.1 z oficjalnego repo
   (`download.docker.com/linux/debian trixie stable`) + Compose v5.5.1;
   `figielak` dodany do grupy `docker`; narzut ~61 MiB RAM
+- 2026-09-21 — uruchomiony AdGuard Home `v0.107.79`; zajęte 53 tcp/udp i 3000 tcp;
+  utworzone `/srv/homelab/data/adguard/` (właściciel `root`)
+- 2026-09-21 — router przepięty na `castle` jako podstawowy DNS,
+  `1.1.1.1` jako zapasowy; krok 3 zamknięty
+- 2026-09-21 — uruchomiony Caddy (własny build 2.11.4 + cloudflare v0.2.4);
+  zajęte 80 tcp, 443 tcp/udp; utworzona sieć `proxy`; wydany certyfikat
+  wildcard `*.home.figielak.dev`; panel AdGuarda wystawiony przez proxy
+- 2026-09-21 — włączony cgroup pamięci w `cmdline.txt` + EEPROM zaktualizowany
+  do wersji z 2026-05-17 + restart. Kontenery odtworzone przez
+  `--force-recreate`, `mem_limit` wreszcie egzekwowany — wcześniej limity
+  w obu stackach były martwe. Zmierzone: AdGuard 76 MiB, Caddy 55 MiB
+- 2026-09-21 — uruchomiony Mealie `v3.27.0` za Caddy jako
+  `mealie.home.figielak.dev`; dane w `/srv/homelab/data/mealie` (UID 1000).
+  Pierwsza usługa z danymi nie do odtworzenia — backupu nadal brak
+- 2026-09-21 — `Caddyfile` przeniesiony do `stacks/caddy/config/`
+  i montowany jako katalog; rejestr portów zweryfikowany przez `ss`

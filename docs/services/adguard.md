@@ -29,8 +29,9 @@ serwera DHCP, żeby sensownie działać.
 
 - **Zależy od:** Dockera i samego hosta. Nic poza tym — musi wstać jako pierwszy.
 - **Zależy od niej:** każde urządzenie w sieci domowej, o ile router podaje
-  `192.168.10.10` jako DNS. Później także rozwiązywanie `*.home.arpa`,
-  czyli dostęp do wszystkich usług po nazwie.
+  `192.168.10.10` jako DNS. Także rozwiązywanie `*.home.figielak.dev`,
+  czyli dostęp do wszystkich usług po nazwie — bez AdGuarda nie działa
+  ani [[caddy]], ani nic za nim.
 
 **`castle` celowo nie używa AdGuarda jako własnego resolvera.** Host zostaje
 przy zewnętrznym DNS z NetworkManagera. Inaczej powstaje pętla: kontener nie
@@ -115,7 +116,8 @@ dig @192.168.10.10 doubleclick.net +short    # powinno zwrocic 0.0.0.0 lub nic
 ## Znane problemy i ograniczenia
 
 - **Tryb `host` wyklucza sieć `proxy`.** Caddy nie dosięgnie kontenera po
-  nazwie. W `Caddyfile` trzeba użyć adresu hosta (`192.168.10.10:3000`).
+  nazwie. W `Caddyfile` idzie przez adres hosta — `{$HOST_IP}:3000`,
+  gdzie `HOST_IP` pochodzi z `.env` stacku Caddy.
 - **Panel na porcie 3000 jest osiągalny bezpośrednio**, z pominięciem Caddy.
   Wynika to z trybu `host` i nie da się tego obejść bez firewalla.
 - **DNS idzie przez Wi-Fi** — `castle` nie ma podłączonego kabla. Każde
