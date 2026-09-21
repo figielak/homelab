@@ -95,7 +95,7 @@ Kolejność z `CLAUDE.md`:
 |---|---|
 | 1. Baza: OS, boot z SSD, hardening SSH, HDD, Docker | **częściowo** — OS ✓, boot z SSD ✓, SSH ✓, Docker ✓, **HDD ✗ (brak sprzętu)** |
 | 2. Repo + szkielet dokumentacji | w trakcie — `/opt/homelab` sklonowane |
-| 3. AdGuard Home | **częściowo** — kontener działa i odpowiada; router jeszcze nie przepięty |
+| 3. AdGuard Home + drugi DNS w routerze | **gotowe** |
 | 4. Caddy + sieć `proxy` | nie rozpoczęte |
 | 5. Mealie | nie rozpoczęte |
 | 6. Backup restic | zablokowane brakiem HDD |
@@ -120,8 +120,10 @@ Nieistniejące jeszcze ścieżki: `/srv/homelab/data`, `/mnt/hdd`, `/mnt/hdd/bac
   po przepięciu na kabel `eth0` dostanie inny adres i wymaga drugiej rezerwacji.
 - **EEPROM nieaktualny** — CURRENT 2026-01-09, LATEST 2026-05-17.
   `sudo rpi-eeprom-update -a` + restart. Zrób przed wdrożeniem usług. #do-zrobienia
-- **Brak drugiego DNS w ruterze** — do ustawienia razem z AdGuardem (krok 3),
-  żeby awaria Pi nie odcinała domu od internetu.
+- **`castle` jest teraz pojedynczym punktem awarii DNS dla całego domu.**
+  Router podaje `192.168.10.10` jako podstawowy resolver, `1.1.1.1` jako
+  zapasowy. Awaria Pi oznacza brak filtrowania, ale nie brak internetu —
+  to świadomie przyjęty kompromis.
 
 ## Pliki systemowe w repo
 
@@ -146,6 +148,8 @@ diff /opt/homelab/hosts/castle/etc/ssh/sshd_config.d/10-homelab-hardening.conf \
   ustalono, że port 53 jest wolny (brak `systemd-resolved`)
 - 2026-09-21 — wyłączone logowanie roota po SSH
   (`/etc/ssh/sshd_config.d/10-homelab-hardening.conf`)
+- 2026-09-21 — router przepięty na `castle` jako podstawowy DNS,
+  `1.1.1.1` jako zapasowy; krok 3 zamknięty
 - 2026-09-21 — uruchomiony AdGuard Home `v0.107.79`; zajęte 53 tcp/udp i 3000 tcp;
   utworzone `/srv/homelab/data/adguard/` (właściciel `root`)
 - 2026-09-21 — zainstalowany Docker Engine 29.8.1 z oficjalnego repo

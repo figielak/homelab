@@ -129,3 +129,5 @@ dig @192.168.10.10 doubleclick.net +short    # powinno zwrocic 0.0.0.0 lub nic
 - 2026-09-21 — uruchomiony, status `healthy`, zajmuje 53 tcp/udp na wszystkich
   interfejsach; zużycie ~50 MiB; upstream Quad9 (`9.9.9.9`, `149.112.112.112`);
   ustalono, że dane należą do `root`, nie do UID 1000
+- 2026-09-21 — router przepięty: AdGuard jako podstawowy DNS dla całej sieci,
+  `1.1.1.1` jako zapasowy; rozwiązywanie zweryfikowane przez `dig`
