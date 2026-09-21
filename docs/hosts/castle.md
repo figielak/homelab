@@ -1,0 +1,149 @@
+# castle
+
+Jedyny host homelaba. Uruchamia wszystko: Docker, DNS, reverse proxy, usługi.
+Konto administracyjne opisane osobno: [[figielak]].
+
+#host
+
+## Stan ogólny
+
+| | |
+|---|---|
+| Hostname | `castle` |
+| Adres IP | `192.168.10.10/24` (rezerwacja DHCP w ruterze) |
+| Brama | `192.168.10.1` |
+| Interfejs | `wlan0` — **Wi-Fi**, `eth0` odłączony |
+| Sprzęt | Raspberry Pi 4 Model B Rev 1.5, 4 GB RAM |
+| Architektura | `aarch64` (`linux/arm64`) |
+| OS | Raspberry Pi OS Lite, Debian 13 (trixie) |
+| Kernel | `6.18.39+rpt-rpi-v8` |
+| Strefa czasowa | Europe/Warsaw, NTP aktywny |
+| Repo | `/opt/homelab`, właściciel `figielak` |
+
+Stan zebrany: 2026-09-21.
+
+## Rejestr portów
+
+**Aktualizuj przy każdej nowej usłudze.** Przy jednym hoście to jedyna ochrona
+przed kolizjami.
+
+### Zajęte
+
+| Port | Proto | Usługa | Proces | Uwagi |
+|---|---|---|---|---|
+| 22 | tcp | SSH | `sshd` | tylko klucz, root zablokowany |
+| 5353 | udp | mDNS | `avahi-daemon` | **nie koliduje z 53** |
+| 32929, 49401 | udp | mDNS | `avahi-daemon` | porty efemeryczne, zmienne |
+
+Docker nie zajmuje żadnego portu na hoście — `dockerd` słucha na gnieździe
+`/var/run/docker.sock`, nie na TCP. Porty pojawią się dopiero z Caddy i AdGuardem.
+
+### Zarezerwowane (planowane, jeszcze nie zajęte)
+
+| Port | Proto | Usługa | Uwagi |
+|---|---|---|---|
+| 80, 443 | tcp | Caddy | jedyne wejście do usług |
+| 53 | tcp/udp | AdGuard Home | `network_mode: host` |
+| 3000 | tcp | panel AdGuard | **nie 80** — kolizja z Caddy; docelowo za proxy |
+
+**Port 53 jest wolny.** `systemd-resolved` nie działa na tym hoście —
+`/etc/resolv.conf` generuje NetworkManager i wskazuje wprost na 8.8.8.8 i 1.1.1.1.
+Nie ma stub listenera na 127.0.0.53, więc `DNSStubListener=no` nie jest tu potrzebne.
+Jeśli `systemd-resolved` kiedykolwiek zostanie włączony, ten warunek wraca.
+
+## Dyski
+
+| Urządzenie | Rozmiar | FS | Label | Montowanie |
+|---|---|---|---|---|
+| `sda1` | 512 MB | vfat | `bootfs` | `/boot/firmware` |
+| `sda2` | 118,7 GB | ext4 | `rootfs` | `/` |
+
+- Boot z SSD działa: `BOOT_ORDER=0xf14` (USB przed SD), root na `/dev/sda2`.
+- SSD podłączony przez mostek USB-SATA ASMedia ASM1153.
+- `/` zajęte w 4% (4,2 GB / 117 GB).
+- Swap: aktywny `zram0` (2 GB). `loop0` (`origin:rpi-swap`, 2 GB) istnieje,
+  ale jest nieaktywny — i dobrze, swap na SSD zużywa jego żywotność.
+- `fstab` montuje po `PARTUUID`, nie po `/dev/sdX` — odporne na zmianę kolejności USB.
+
+**HDD 1 TB nie jest podłączony.** `/mnt/hdd` nie istnieje, `lsusb` widzi tylko
+mostek SSD. Blokuje to backupy (krok 6) i dane masowe (krok 9).
+
+## Budżet RAM
+
+| | |
+|---|---|
+| Całość | 3,7 GiB |
+| Baseline systemu (bez Dockera) | ~185 MiB |
+| Baseline z `dockerd` + `containerd`, bez kontenerów | ~246 MiB |
+| Narzut samego Dockera | ~61 MiB (zmierzone 2026-09-21) |
+| Dostępne na kontenery | ~3,4 GiB |
+
+Suma `mem_limit` wszystkich stacków musi się w tym mieścić. Przy każdej nowej
+usłudze odnotuj tu przydział.
+
+| Stack | `mem_limit` | Status |
+|---|---|---|
+| — | — | żaden kontener jeszcze nie wdrożony |
+
+## Stan wdrożenia
+
+Kolejność z `CLAUDE.md`:
+
+| Krok | Stan |
+|---|---|
+| 1. Baza: OS, boot z SSD, hardening SSH, HDD, Docker | **częściowo** — OS ✓, boot z SSD ✓, SSH ✓, Docker ✓, **HDD ✗ (brak sprzętu)** |
+| 2. Repo + szkielet dokumentacji | w trakcie — `/opt/homelab` sklonowane |
+| 3. AdGuard Home | nie rozpoczęte |
+| 4. Caddy + sieć `proxy` | nie rozpoczęte |
+| 5. Mealie | nie rozpoczęte |
+| 6. Backup restic | zablokowane brakiem HDD |
+| 7–9. Monitoring, Tailscale, Syncthing | nie rozpoczęte |
+
+Nieistniejące jeszcze ścieżki: `/srv/homelab/data`, `/mnt/hdd`, `/mnt/hdd/backups`.
+
+## Znane odstępstwa i dług techniczny
+
+- **`sudo` bez hasła** — `/etc/sudoers.d/90-cloud-init-users`:
+  `figielak ALL=(ALL) NOPASSWD:ALL`. Kto zdobędzie klucz SSH, ma roota bez
+  dodatkowej bariery. Pozostałość po cloud-init, nie świadoma decyzja.
+  **Świadomie odłożone** 2026-09-21 — do rozważenia razem z passphrase na kluczu
+  SSH, który chroni szerzej (nie tylko ten host). #do-zrobienia
+- **Grupa `docker` = uprawnienia roota** — dostęp do `/var/run/docker.sock`
+  pozwala zamontować `/` do kontenera. Przyjęte świadomie, bo `sudo docker`
+  przy pracy z compose'em jest nieużywalne. Zobacz [[figielak]].
+- **Brak jakiegokolwiek backupu** — HDD nie jest podłączony. Do tego czasu
+  na `castle` nie trafia nic, czego nie da się odtworzyć. #do-zrobienia
+- **Host na Wi-Fi** — `eth0` odłączony. Każde zapytanie DNS w domu pójdzie przez
+  Wi-Fi, gdy wejdzie AdGuard. Rezerwacja DHCP jest przypięta do MAC-a `wlan0`;
+  po przepięciu na kabel `eth0` dostanie inny adres i wymaga drugiej rezerwacji.
+- **EEPROM nieaktualny** — CURRENT 2026-01-09, LATEST 2026-05-17.
+  `sudo rpi-eeprom-update -a` + restart. Zrób przed wdrożeniem usług. #do-zrobienia
+- **Brak drugiego DNS w ruterze** — do ustawienia razem z AdGuardem (krok 3),
+  żeby awaria Pi nie odcinała domu od internetu.
+
+## Pliki systemowe w repo
+
+Ręczne zmiany w konfiguracji systemu leżą w `hosts/castle/`, gdzie ścieżka
+w repo odwzorowuje ścieżkę na hoście. Kopiowane ręcznie, w obie strony —
+nie ma tu automatyki. Pliki mają być **bajtowo identyczne** z tymi na hoście,
+dzięki czemu rozjazd wykrywa zwykły `diff`:
+
+```bash
+diff /opt/homelab/hosts/castle/etc/ssh/sshd_config.d/10-homelab-hardening.conf \
+     /etc/ssh/sshd_config.d/10-homelab-hardening.conf
+```
+
+| Plik | Cel na hoście |
+|---|---|
+| `hosts/castle/etc/ssh/sshd_config.d/10-homelab-hardening.conf` | `/etc/ssh/sshd_config.d/` (właściciel `root`, `644`) |
+
+## Log zmian
+
+- 2026-09-11 — sklonowane repo do `/opt/homelab` (deploy key read-only)
+- 2026-09-21 — zebrany stan faktyczny hosta; rezerwacja DHCP `192.168.10.10`;
+  ustalono, że port 53 jest wolny (brak `systemd-resolved`)
+- 2026-09-21 — wyłączone logowanie roota po SSH
+  (`/etc/ssh/sshd_config.d/10-homelab-hardening.conf`)
+- 2026-09-21 — zainstalowany Docker Engine 29.8.1 z oficjalnego repo
+  (`download.docker.com/linux/debian trixie stable`) + Compose v5.5.1;
+  `figielak` dodany do grupy `docker`; narzut ~61 MiB RAM
