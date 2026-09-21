@@ -22,7 +22,7 @@ serwera DHCP, żeby sensownie działać.
 | Dane | `/srv/homelab/data/adguard/{work,conf}` |
 | Stack | `stacks/adguard/` |
 | Obraz | `adguard/adguardhome:v0.107.79` |
-| RAM | `mem_limit` 256 MiB, realnie 60–100 MiB |
+| RAM | `mem_limit` 256 MiB, **zmierzone ~50 MiB** (2026-09-21, świeża instalacja) |
 | Sieć | `network_mode: host` — **nie należy do sieci `proxy`** |
 
 ## Zależności
@@ -47,6 +47,13 @@ blokujące, reguły, rewrity i **hash hasła administratora**.
 Katalog `work/` trzyma statystyki i log zapytań. Przy odtworzeniu nie jest
 konieczny — stracisz historię, nie konfigurację.
 
+**Dane należą do `root` (0:0), nie do `figielak`.** Kontener AdGuarda działa
+jako root i sam ustawia właściciela; `AdGuardHome.yaml` ma tryb `600`.
+Backup musi zachowywać właściciela i uprawnienia numerycznie — restic robi to
+domyślnie, pod warunkiem że odtwarzasz jako root. **Nie rób `chown` na 1000**
+po odtworzeniu: AdGuard i tak zapisuje jako root, a rozjazd uprawnień na pliku
+z hashem hasła to niepotrzebne ryzyko.
+
 ## Procedura odtworzenia od zera
 
 Zakłada działający host z Dockerem i wolny port 53.
@@ -55,17 +62,17 @@ Zakłada działający host z Dockerem i wolny port 53.
 # 1. repo
 cd /opt/homelab && git pull --ff-only
 
-# 2. katalogi danych
+# 2. katalogi danych — wlascicielem zostaje root, kontener dziala jako root
 sudo mkdir -p /srv/homelab/data/adguard/{work,conf}
-sudo chown -R 1000:1000 /srv/homelab/data/adguard
 
 # 3. konfiguracja stacku
 cd /opt/homelab/stacks/adguard
 cp .env.example .env
 
 # 4a. ODTWORZENIE Z BACKUPU — wgraj AdGuardHome.yaml przed pierwszym startem
-#     sudo cp <backup>/conf/AdGuardHome.yaml /srv/homelab/data/adguard/conf/
-#     sudo chown 1000:1000 /srv/homelab/data/adguard/conf/AdGuardHome.yaml
+#     sudo cp -a <backup>/conf/AdGuardHome.yaml /srv/homelab/data/adguard/conf/
+#     sudo chown 0:0 /srv/homelab/data/adguard/conf/AdGuardHome.yaml
+#     sudo chmod 600 /srv/homelab/data/adguard/conf/AdGuardHome.yaml
 
 # 5. start
 docker compose config    # sprawdza skladnie i podstawienie zmiennych
@@ -119,3 +126,6 @@ dig @192.168.10.10 doubleclick.net +short    # powinno zwrocic 0.0.0.0 lub nic
 ## Log zmian
 
 - 2026-09-21 — stack utworzony, obraz `v0.107.79` (arm64 potwierdzony)
+- 2026-09-21 — uruchomiony, status `healthy`, zajmuje 53 tcp/udp na wszystkich
+  interfejsach; zużycie ~50 MiB; upstream Quad9 (`9.9.9.9`, `149.112.112.112`);
+  ustalono, że dane należą do `root`, nie do UID 1000

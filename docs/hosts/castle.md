@@ -32,19 +32,20 @@ przed kolizjami.
 | Port | Proto | Usługa | Proces | Uwagi |
 |---|---|---|---|---|
 | 22 | tcp | SSH | `sshd` | tylko klucz, root zablokowany |
+| 53 | tcp + udp | DNS | `AdGuardHome` | `*:53`, wszystkie interfejsy; `network_mode: host` |
+| 3000 | tcp | panel AdGuard | `AdGuardHome` | docelowo za Caddy jako `adguard.home.arpa` |
 | 5353 | udp | mDNS | `avahi-daemon` | **nie koliduje z 53** |
 | 32929, 49401 | udp | mDNS | `avahi-daemon` | porty efemeryczne, zmienne |
 
 Docker nie zajmuje żadnego portu na hoście — `dockerd` słucha na gnieździe
-`/var/run/docker.sock`, nie na TCP. Porty pojawią się dopiero z Caddy i AdGuardem.
+`/var/run/docker.sock`, nie na TCP. Kontenery aplikacyjne też nie publikują
+portów; jedynym wyjątkiem jest AdGuard w trybie `host`. Zobacz [[adguard]].
 
 ### Zarezerwowane (planowane, jeszcze nie zajęte)
 
 | Port | Proto | Usługa | Uwagi |
 |---|---|---|---|
 | 80, 443 | tcp | Caddy | jedyne wejście do usług |
-| 53 | tcp/udp | AdGuard Home | `network_mode: host` |
-| 3000 | tcp | panel AdGuard | **nie 80** — kolizja z Caddy; docelowo za proxy |
 
 **Port 53 jest wolny.** `systemd-resolved` nie działa na tym hoście —
 `/etc/resolv.conf` generuje NetworkManager i wskazuje wprost na 8.8.8.8 i 1.1.1.1.
@@ -81,9 +82,10 @@ mostek SSD. Blokuje to backupy (krok 6) i dane masowe (krok 9).
 Suma `mem_limit` wszystkich stacków musi się w tym mieścić. Przy każdej nowej
 usłudze odnotuj tu przydział.
 
-| Stack | `mem_limit` | Status |
-|---|---|---|
-| — | — | żaden kontener jeszcze nie wdrożony |
+| Stack | `mem_limit` | Zmierzone | Status |
+|---|---|---|---|
+| `adguard` | 256 MiB | ~50 MiB | działa od 2026-09-21 |
+| **Przydzielone razem** | **256 MiB** | ~50 MiB | pozostaje ~3,1 GiB limitu |
 
 ## Stan wdrożenia
 
@@ -93,7 +95,7 @@ Kolejność z `CLAUDE.md`:
 |---|---|
 | 1. Baza: OS, boot z SSD, hardening SSH, HDD, Docker | **częściowo** — OS ✓, boot z SSD ✓, SSH ✓, Docker ✓, **HDD ✗ (brak sprzętu)** |
 | 2. Repo + szkielet dokumentacji | w trakcie — `/opt/homelab` sklonowane |
-| 3. AdGuard Home | nie rozpoczęte |
+| 3. AdGuard Home | **częściowo** — kontener działa i odpowiada; router jeszcze nie przepięty |
 | 4. Caddy + sieć `proxy` | nie rozpoczęte |
 | 5. Mealie | nie rozpoczęte |
 | 6. Backup restic | zablokowane brakiem HDD |
@@ -144,6 +146,8 @@ diff /opt/homelab/hosts/castle/etc/ssh/sshd_config.d/10-homelab-hardening.conf \
   ustalono, że port 53 jest wolny (brak `systemd-resolved`)
 - 2026-09-21 — wyłączone logowanie roota po SSH
   (`/etc/ssh/sshd_config.d/10-homelab-hardening.conf`)
+- 2026-09-21 — uruchomiony AdGuard Home `v0.107.79`; zajęte 53 tcp/udp i 3000 tcp;
+  utworzone `/srv/homelab/data/adguard/` (właściciel `root`)
 - 2026-09-21 — zainstalowany Docker Engine 29.8.1 z oficjalnego repo
   (`download.docker.com/linux/debian trixie stable`) + Compose v5.5.1;
   `figielak` dodany do grupy `docker`; narzut ~61 MiB RAM
