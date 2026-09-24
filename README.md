@@ -38,10 +38,12 @@ scripts/         narzędzia, m.in. collect-host-state.sh
 | AdGuard Home | `adguard.home.figielak.dev` | [docs](docs/services/adguard.md) |
 | Caddy | — (reverse proxy) | [docs](docs/services/caddy.md) |
 | Mealie | `mealie.home.figielak.dev` | [docs](docs/services/mealie.md) |
+| Tailscale | — (zdalny dostęp, na hoście) | [docs](docs/services/tailscale.md) |
 
 Domena wewnętrzna `*.home.figielak.dev` rozwiązywana przez AdGuard (DNS rewrite),
-certyfikat wildcard od Let's Encrypt przez DNS-01 w Cloudflare. Nazwy **nie**
-istnieją w publicznym DNS.
+certyfikat wildcard od Let's Encrypt przez DNS-01 w Cloudflare. W Cloudflare
+jest też publiczny wildcard `*.home → 192.168.10.10` (adres prywatny, więc
+z internetu nieosiągalny). Poza domem dostęp daje Tailscale.
 
 ## Dostarczanie zmian na hosta
 
@@ -56,6 +58,7 @@ Deploy key jest read-only — Pi nigdy nie pushuje.
 ## Stan
 
 Kroki 1–5 kolejności wdrażania zamknięte (baza, repo, AdGuard, Caddy, Mealie).
+Krok 8 (Tailscale) wdrożony świadomie przed krokiem 7.
 
 **Otwarte ryzyko: brak jakiegokolwiek backupu.** Szczegóły w długu technicznym
 notatki hosta.

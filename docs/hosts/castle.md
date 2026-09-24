@@ -38,6 +38,7 @@ przed kolizjami.
 | 3000 | tcp | panel AdGuard | `AdGuardHome` | wystawiony jako `adguard.home.figielak.dev`; **nadal osiągalny bezpośrednio** |
 | 5353 | udp | mDNS | `avahi-daemon` | **nie koliduje z 53** |
 | 32929, 49401 | udp | mDNS | `avahi-daemon` | porty efemeryczne, zmienne |
+| 41641 | udp | Tailscale | `tailscaled` | IPv4 + IPv6, usługa systemowa; zobacz [[tailscale]] |
 
 Docker nie zajmuje żadnego portu na hoście — `dockerd` słucha na gnieździe
 `/var/run/docker.sock`, nie na TCP. Kontenery aplikacyjne też nie publikują
@@ -79,7 +80,8 @@ mostek SSD. Blokuje to backupy (krok 6) i dane masowe (krok 9).
 | Baseline systemu (bez Dockera) | ~185 MiB |
 | Baseline z `dockerd` + `containerd`, bez kontenerów | ~246 MiB |
 | Narzut samego Dockera | ~61 MiB (zmierzone 2026-09-21) |
-| Dostępne na kontenery | ~3,4 GiB |
+| Narzut `tailscaled` | ~60 MiB RSS (zmierzone 2026-09-24) |
+| Dostępne na kontenery | ~3,4 GiB (po odjęciu Dockera i `tailscaled`) |
 
 Suma `mem_limit` wszystkich stacków musi się w tym mieścić. Przy każdej nowej
 usłudze odnotuj tu przydział.
@@ -89,7 +91,7 @@ usłudze odnotuj tu przydział.
 | `adguard` | 256 MiB | 76 MiB | działa od 2026-09-21 |
 | `caddy` | 256 MiB | 55 MiB | działa od 2026-09-21 |
 | `mealie` | 1024 MiB | ~250 MiB | działa od 2026-09-21 |
-| **Przydzielone razem** | **1,5 GiB** | **~350 MiB** | pozostaje ~2,2 GiB limitu |
+| **Przydzielone razem** | **1,5 GiB** | **~350 MiB** | pozostaje ~1,9 GiB z dostępnych |
 
 Pomiary ze stanu ustalonego (po restarcie, z załadowanymi listami filtrów).
 Tuż po `docker compose up` wartości są o połowę niższe i wprowadzają w błąd.
@@ -106,7 +108,9 @@ Kolejność z `CLAUDE.md`:
 | 4. Caddy + sieć `proxy` + domena wewnętrzna | **gotowe** |
 | 5. Mealie | **gotowe** — wzorzec zwalidowany |
 | 6. Backup restic | zablokowane brakiem HDD |
-| 7–9. Monitoring, Tailscale, Syncthing | nie rozpoczęte |
+| 7. Monitoring | nie rozpoczęte, **następny krok** |
+| 8. Tailscale | **gotowe** (2026-09-24), świadomie przed krokiem 7, bo krok 6 stoi przez brak sprzętu |
+| 9. Syncthing | nie rozpoczęte |
 
 Istnieje `/srv/homelab/data/` z podkatalogami `adguard/`, `caddy/`, `mealie/`.
 Nie istnieją `/mnt/hdd` ani `/mnt/hdd/backups` — czekają na podłączenie dysku.
@@ -171,6 +175,7 @@ diff /opt/homelab/hosts/castle/etc/ssh/sshd_config.d/10-homelab-hardening.conf \
 | Plik | Cel na hoście |
 |---|---|
 | `hosts/castle/etc/ssh/sshd_config.d/10-homelab-hardening.conf` | `/etc/ssh/sshd_config.d/` (właściciel `root`, `644`) |
+| `hosts/castle/etc/sysctl.d/99-tailscale.conf` | `/etc/sysctl.d/` (właściciel `root`, `644`), potem `sudo sysctl --system` |
 
 ## Log zmian
 
@@ -202,3 +207,5 @@ Kolejność chronologiczna, najstarsze u góry.
   i montowany jako katalog; rejestr portów zweryfikowany przez `ss`
 - 2026-09-24 — publiczny wildcard A `*.home.figielak.dev → 192.168.10.10`
   w Cloudflare; zapasowy DNS z routera dawał NXDOMAIN dla usług
+- 2026-09-24 — Tailscale `1.102.4` na hoście, subnet route `192.168.10.10/32`;
+  zajęte 41641/udp, ~60 MiB RAM; krok 8 przed 7, świadomie
