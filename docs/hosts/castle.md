@@ -200,3 +200,5 @@ Kolejność chronologiczna, najstarsze u góry.
   Pierwsza usługa z danymi nie do odtworzenia — backupu nadal brak
 - 2026-09-21 — `Caddyfile` przeniesiony do `stacks/caddy/config/`
   i montowany jako katalog; rejestr portów zweryfikowany przez `ss`
+- 2026-09-24 — publiczny wildcard A `*.home.figielak.dev → 192.168.10.10`
+  w Cloudflare; zapasowy DNS z routera dawał NXDOMAIN dla usług

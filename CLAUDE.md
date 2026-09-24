@@ -80,8 +80,10 @@ tu format ma znaczenie, więc proponuj gotową treść.
 - Ścieżki: repo `/opt/homelab`, dane `/srv/homelab/data/<stack>/`, HDD `/mnt/hdd`,
   backupy `/mnt/hdd/backups`.
 - Domena wewnętrzna `*.home.figielak.dev`, rozwiązywana przez AdGuard
-  (DNS rewrite → `192.168.10.10`). Brak publicznych rekordów A; certyfikat
-  wildcard od Let's Encrypt przez DNS-01 w Cloudflare.
+  (DNS rewrite → `192.168.10.10`). W Cloudflare ten sam wildcard A
+  `*.home → 192.168.10.10` (DNS only) — żeby zapasowy resolver z routera
+  zwracał to samo zamiast NXDOMAIN. Certyfikat wildcard od Let's Encrypt
+  przez DNS-01 w Cloudflare.
 - Wspólna sieć Dockera `proxy` dla Caddy i usług za nim.
 - Nazwy kontenerów i katalogów: `kebab-case`, identyczne z nazwą stacku.
 - Commity: `<scope>: <opis>`, np. `mealie: bump to 2.1.0`.
