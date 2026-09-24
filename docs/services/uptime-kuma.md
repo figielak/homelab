@@ -129,9 +129,12 @@ docker start mealie                    # push "up"
 - **Monitor na tym samym hoście nie zgłosi śmierci hosta.** Gdy `castle`
   padnie (zasilanie, Wi-Fi, SSD), zapada cisza zamiast alertu. Rozwiązaniem
   jest zewnętrzny „dead man's switch” (np. healthchecks.io z pingiem
-  z `castle`). Na razie go nie ma. #do-zrobienia
+  z `castle`). **Świadomie zaakceptowane** 2026-09-24: na razie bez niego.
+  Rozważane i odrzucone: Kuma na Raspberry Pi Zero 2 W. Pada razem z `castle`
+  przy braku prądu lub internetu, ma kartę SD i jest drugim hostem do utrzymania.
 - **Kuma nie monitoruje sama siebie.** Jeśli kontener stanie, alerty znikają
-  bez ostrzeżenia. Rozwiąże to ten sam dead man's switch.
+  bez ostrzeżenia. Zaakceptowane razem z punktem wyżej. Rozwiąże to ten sam
+  dead man's switch.
 - **Treść alertów przechodzi przez publiczny ntfy.sh.** Zawiera nazwy usług
   i komunikaty błędów, nic więcej. Przy potrzebie większej prywatności:
   własny serwer ntfy.
