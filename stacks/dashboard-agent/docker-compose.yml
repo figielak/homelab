@@ -1,0 +1,49 @@
+services:
+  # Wysyla statystyki castle na publiczny dashboard figielak.dev (push, POST
+  # co 60 s). Nie ma UI ani portow. Kontrakt: docs/services/dashboard-agent.md.
+  dashboard-agent:
+    image: python:3.14.7-alpine3.24
+    container_name: dashboard-agent
+    restart: unless-stopped
+
+    # Wyjatek od zasady "bez trybu host", jak beszel-agent: w sieci bridge
+    # /proc/net/dev pokazuje tylko interfejs kontenera, a nie wlan0 hosta.
+    # Tryb host daje tez dostep do AdGuarda i socket proxy na 127.0.0.1.
+    # Niczego nie nasluchuje.
+    network_mode: host
+
+    mem_limit: 64m
+
+    # Obraz stockowy, skrypt z repo montowany tylko do odczytu — bez builda.
+    command: ["python", "-u", "/app/agent.py"]
+    user: "65534:65534"
+    read_only: true
+
+    environment:
+      PYTHONDONTWRITEBYTECODE: 1
+      PUSH_URL: ${PUSH_URL}
+      PUSH_TOKEN: ${PUSH_TOKEN}
+      KUMA_URL: ${KUMA_URL}
+      KUMA_API_KEY: ${KUMA_API_KEY}
+      KUMA_PUSH_URL: ${KUMA_PUSH_URL}
+      ADGUARD_URL: ${ADGUARD_URL}
+      ADGUARD_USER: ${ADGUARD_USER}
+      ADGUARD_PASSWORD: ${ADGUARD_PASSWORD}
+      DOCKER_URL: ${DOCKER_URL}
+
+    volumes:
+      - ./agent.py:/app/agent.py:ro
+      - ./config.json:/app/config.json:ro
+      # Stan licznikow ruchu. Lezy na SSD, wiec sluzy tez do pomiaru dysku
+      # systemowego (statvfs) — bez montowania "/".
+      - ${DATA_ROOT}/dashboard-agent:/data
+      # Strefa czasowa hosta: "dzis" liczone od polnocy w Polsce.
+      - /etc/localtime:/etc/localtime:ro
+
+    healthcheck:
+      # Zdrowy = ostatnia udana wysylka nie starsza niz 5 min.
+      test: ["CMD", "python", "-c", "import os,sys,time; sys.exit(time.time() - os.path.getmtime('/data/last_ok') > 300)"]
+      interval: 60s
+      timeout: 5s
+      retries: 3
+      start_period: 120s

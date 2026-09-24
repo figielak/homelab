@@ -1,0 +1,10 @@
+{
+  "interval_seconds": 60,
+  "interfaces": ["wlan0", "eth0"],
+  "disks": [
+    { "kind": "system", "path": "/data" }
+  ],
+  "services": {
+    "dns": ["AdGuard DNS", "AdGuard rewrite"]
+  }
+}
