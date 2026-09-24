@@ -1,0 +1,35 @@
+services:
+  uptime-kuma:
+    # slim: bez wbudowanego MariaDB i Chromium — zostajemy przy SQLite,
+    # a monitora typu "Browser Engine" nie uzywamy. Obraz ~300-400 MB mniejszy.
+    # rootless: dziala jako node (UID 1000). Traci tylko monitoring przez
+    # docker.sock, ktorego i tak swiadomie nie montujemy (socket = root na hoscie).
+    image: louislam/uptime-kuma:2.5.5-slim-rootless
+    container_name: uptime-kuma
+    restart: unless-stopped
+
+    mem_limit: 256m
+
+    environment:
+      TZ: Europe/Warsaw
+
+    volumes:
+      # Baza SQLite z monitorami, historia i ustawienia powiadomien.
+      # Katalog musi nalezec do UID 1000 — inaczej kontener nie wstanie.
+      - ${DATA_ROOT}/uptime-kuma:/app/data
+
+    healthcheck:
+      # Ten sam healthcheck co w obrazie (docker/dockerfile w repo Uptime Kuma),
+      # powtorzony jawnie, zeby bylo go widac tutaj.
+      test: ["CMD", "/app/extra/healthcheck"]
+      interval: 60s
+      timeout: 30s
+      retries: 5
+      start_period: 180s
+
+    networks:
+      - proxy
+
+networks:
+  proxy:
+    external: true

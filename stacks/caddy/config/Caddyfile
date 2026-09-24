@@ -32,6 +32,12 @@
 		reverse_proxy mealie:9000
 	}
 
+	@uptime-kuma host uptime-kuma.home.figielak.dev
+	handle @uptime-kuma {
+		# Panel uzywa WebSocketow — Caddy przepuszcza je domyslnie.
+		reverse_proxy uptime-kuma:3001
+	}
+
 	# Nazwa pasujaca do wildcardu, ale nieprzypisana do zadnej uslugi.
 	# Bez tego Caddy zwrocilby pusta odpowiedz i diagnostyka bylaby trudniejsza.
 	handle {
