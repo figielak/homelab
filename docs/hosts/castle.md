@@ -49,6 +49,8 @@ portów. Wyjątki:
   w trybie `host` nie dosięgnie go po nazwie kontenera
 - `beszel-agent` w trybie `host` **nie zajmuje portu**, bo słucha na unix
   sockecie. Zobacz [[beszel]].
+- `dashboard-agent` w trybie `host` **nie zajmuje portu**, tylko wysyła dane
+  na zewnątrz. Zobacz [[dashboard-agent]].
 
 **`systemd-resolved` na tym hoście nie działa.** `/etc/resolv.conf` generuje
 NetworkManager i wskazuje wprost na 8.8.8.8 i 1.1.1.1. Nie ma stub listenera
@@ -99,7 +101,8 @@ usłudze odnotuj tu przydział.
 | `mealie` | 1024 MiB | ~250 MiB | działa od 2026-09-21 |
 | `uptime-kuma` | 256 MiB | ~122 MiB | działa od 2026-09-24 |
 | `beszel` (hub + agent + proxy) | 128 + 64 + 64 MiB | ~12 + 5 + 18 MiB | działa od 2026-09-24; **pomiar tuż po starcie**, do powtórzenia |
-| **Przydzielone razem** | **2,0 GiB** | **~535 MiB** | pozostaje ~1,4 GiB z dostępnych |
+| `dashboard-agent` | 64 MiB | ~13 MiB | działa od 2026-09-24 |
+| **Przydzielone razem** | **2,1 GiB** | **~550 MiB** | pozostaje ~1,3 GiB z dostępnych |
 
 Pomiary ze stanu ustalonego (po restarcie, z załadowanymi listami filtrów).
 Tuż po `docker compose up` wartości są o połowę niższe i wprowadzają w błąd.
@@ -121,7 +124,7 @@ Kolejność z `CLAUDE.md`:
 | 9. Syncthing | nie rozpoczęte |
 
 Istnieje `/srv/homelab/data/` z podkatalogami `adguard/`, `caddy/`, `mealie/`,
-`uptime-kuma/`, `beszel/`.
+`uptime-kuma/`, `beszel/`, `dashboard-agent/`.
 Nie istnieją `/mnt/hdd` ani `/mnt/hdd/backups` — czekają na podłączenie dysku.
 
 ## Znane odstępstwa i dług techniczny
@@ -222,3 +225,5 @@ Kolejność chronologiczna, najstarsze u góry.
   `uptime-kuma.home.figielak.dev`; alerty przez ntfy; ~122 MiB RAM
 - 2026-09-24 — uruchomiony Beszel `0.20.0` (hub + agent + socket proxy);
   zajęte `127.0.0.1:2375`; krok 7 zamknięty
+- 2026-09-24 — uruchomiony `dashboard-agent` (push statystyk na figielak.dev
+  co 60 s), ~13 MiB RAM; retencja statystyk AdGuarda zmieniona na 7 dni

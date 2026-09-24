@@ -51,6 +51,8 @@ kopia konfiguracji poza bazą. Aktualizuj ją przy każdej zmianie w UI.
 - **Nazwa tematu działa jak hasło**: kto ją zna, czyta alerty. Jest w menedżerze
   haseł jako „Homelab ntfy” i nigdy nie trafia do repo.
 - Konto admina: menedżer haseł, „Homelab Uptime Kuma”
+- API key `dashboard-agent` (Settings → API Keys, bez wygasania) do `/metrics`:
+  menedżer haseł, „Homelab Kuma API key”
 
 ### Monitory
 
@@ -64,6 +66,7 @@ nie budził alarmu.
 | Beszel | HTTP(s) | `https://beszel.home.figielak.dev` | hub [[beszel]] przez Caddy |
 | AdGuard DNS | DNS | `example.com`, resolver `192.168.10.10:53` | AdGuard odpowiada jako resolver domu |
 | AdGuard rewrite | DNS | `mealie.home.figielak.dev`, resolver `192.168.10.10:53` | działa rewrite `*.home.figielak.dev` |
+| Dashboard agent | Push | interwał 60 s, 2 ponowienia; URL w `.env` [[dashboard-agent]] | agent przestał wysyłać dane na stronę |
 
 **Dlaczego osobny monitor rewrite'u:** kontener rozwiązuje nazwy przez resolver
 hosta (8.8.8.8/1.1.1.1), który dostaje odpowiedź z publicznego wildcardu
@@ -148,3 +151,4 @@ docker start mealie                    # push "up"
   [[caddy]] pod `uptime-kuma.home.figielak.dev`; 4 monitory, powiadomienia
   ntfy; test alertu (zatrzymanie Mealie) zaliczony; zużycie ~122 MiB
 - 2026-09-24 — dodany monitor Beszel
+- 2026-09-24 — API key i monitor Push dla [[dashboard-agent]]
