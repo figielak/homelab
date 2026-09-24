@@ -91,7 +91,8 @@ usłudze odnotuj tu przydział.
 | `adguard` | 256 MiB | 76 MiB | działa od 2026-09-21 |
 | `caddy` | 256 MiB | 55 MiB | działa od 2026-09-21 |
 | `mealie` | 1024 MiB | ~250 MiB | działa od 2026-09-21 |
-| **Przydzielone razem** | **1,5 GiB** | **~350 MiB** | pozostaje ~1,9 GiB z dostępnych |
+| `uptime-kuma` | 256 MiB | ~122 MiB | działa od 2026-09-24 |
+| **Przydzielone razem** | **1,75 GiB** | **~500 MiB** | pozostaje ~1,65 GiB z dostępnych |
 
 Pomiary ze stanu ustalonego (po restarcie, z załadowanymi listami filtrów).
 Tuż po `docker compose up` wartości są o połowę niższe i wprowadzają w błąd.
@@ -108,11 +109,12 @@ Kolejność z `CLAUDE.md`:
 | 4. Caddy + sieć `proxy` + domena wewnętrzna | **gotowe** |
 | 5. Mealie | **gotowe** — wzorzec zwalidowany |
 | 6. Backup restic | zablokowane brakiem HDD |
-| 7. Monitoring | nie rozpoczęte, **następny krok** |
+| 7. Monitoring | **częściowo**: Uptime Kuma ✓, Beszel ✗ (**następny krok**) |
 | 8. Tailscale | **gotowe** (2026-09-24), świadomie przed krokiem 7, bo krok 6 stoi przez brak sprzętu |
 | 9. Syncthing | nie rozpoczęte |
 
-Istnieje `/srv/homelab/data/` z podkatalogami `adguard/`, `caddy/`, `mealie/`.
+Istnieje `/srv/homelab/data/` z podkatalogami `adguard/`, `caddy/`, `mealie/`,
+`uptime-kuma/`.
 Nie istnieją `/mnt/hdd` ani `/mnt/hdd/backups` — czekają na podłączenie dysku.
 
 ## Znane odstępstwa i dług techniczny
@@ -209,3 +211,5 @@ Kolejność chronologiczna, najstarsze u góry.
   w Cloudflare; zapasowy DNS z routera dawał NXDOMAIN dla usług
 - 2026-09-24 — Tailscale `1.102.4` na hoście, subnet route `192.168.10.10/32`;
   zajęte 41641/udp, ~60 MiB RAM; krok 8 przed 7, świadomie
+- 2026-09-24 — uruchomiony Uptime Kuma `2.5.5-slim-rootless` za Caddy jako
+  `uptime-kuma.home.figielak.dev`; alerty przez ntfy; ~122 MiB RAM

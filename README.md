@@ -39,6 +39,7 @@ scripts/         narzędzia, m.in. collect-host-state.sh
 | Caddy | — (reverse proxy) | [docs](docs/services/caddy.md) |
 | Mealie | `mealie.home.figielak.dev` | [docs](docs/services/mealie.md) |
 | Tailscale | — (zdalny dostęp, na hoście) | [docs](docs/services/tailscale.md) |
+| Uptime Kuma | `uptime-kuma.home.figielak.dev` | [docs](docs/services/uptime-kuma.md) |
 
 Domena wewnętrzna `*.home.figielak.dev` rozwiązywana przez AdGuard (DNS rewrite),
 certyfikat wildcard od Let's Encrypt przez DNS-01 w Cloudflare. W Cloudflare
