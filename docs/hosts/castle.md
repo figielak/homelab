@@ -35,6 +35,7 @@ przed kolizjami.
 | 53 | tcp + udp | DNS | `AdGuardHome` | `*:53`, wszystkie interfejsy; `network_mode: host` |
 | 80 | tcp | Caddy | kontener `caddy` | przekierowanie na HTTPS |
 | 443 | tcp + udp | Caddy | kontener `caddy` | udp = HTTP/3 (QUIC) |
+| 2375 | tcp | Docker socket proxy | kontener `beszel-socket-proxy` | **tylko `127.0.0.1`**; tylko odczyt Docker API dla agenta [[beszel]] |
 | 3000 | tcp | panel AdGuard | `AdGuardHome` | wystawiony jako `adguard.home.figielak.dev`; **nadal osiągalny bezpośrednio** |
 | 5353 | udp | mDNS | `avahi-daemon` | **nie koliduje z 53** |
 | 32929, 49401 | udp | mDNS | `avahi-daemon` | porty efemeryczne, zmienne |
@@ -42,7 +43,12 @@ przed kolizjami.
 
 Docker nie zajmuje żadnego portu na hoście — `dockerd` słucha na gnieździe
 `/var/run/docker.sock`, nie na TCP. Kontenery aplikacyjne też nie publikują
-portów; jedynym wyjątkiem jest AdGuard w trybie `host`. Zobacz [[adguard]].
+portów. Wyjątki:
+- AdGuard w trybie `host` (port 53), zobacz [[adguard]]
+- `beszel-socket-proxy` na `127.0.0.1:2375`: tylko localhost, bo agent
+  w trybie `host` nie dosięgnie go po nazwie kontenera
+- `beszel-agent` w trybie `host` **nie zajmuje portu**, bo słucha na unix
+  sockecie. Zobacz [[beszel]].
 
 **`systemd-resolved` na tym hoście nie działa.** `/etc/resolv.conf` generuje
 NetworkManager i wskazuje wprost na 8.8.8.8 i 1.1.1.1. Nie ma stub listenera
@@ -92,7 +98,8 @@ usłudze odnotuj tu przydział.
 | `caddy` | 256 MiB | 55 MiB | działa od 2026-09-21 |
 | `mealie` | 1024 MiB | ~250 MiB | działa od 2026-09-21 |
 | `uptime-kuma` | 256 MiB | ~122 MiB | działa od 2026-09-24 |
-| **Przydzielone razem** | **1,75 GiB** | **~500 MiB** | pozostaje ~1,65 GiB z dostępnych |
+| `beszel` (hub + agent + proxy) | 128 + 64 + 64 MiB | ~12 + 5 + 18 MiB | działa od 2026-09-24; **pomiar tuż po starcie**, do powtórzenia |
+| **Przydzielone razem** | **2,0 GiB** | **~535 MiB** | pozostaje ~1,4 GiB z dostępnych |
 
 Pomiary ze stanu ustalonego (po restarcie, z załadowanymi listami filtrów).
 Tuż po `docker compose up` wartości są o połowę niższe i wprowadzają w błąd.
@@ -109,12 +116,12 @@ Kolejność z `CLAUDE.md`:
 | 4. Caddy + sieć `proxy` + domena wewnętrzna | **gotowe** |
 | 5. Mealie | **gotowe** — wzorzec zwalidowany |
 | 6. Backup restic | zablokowane brakiem HDD |
-| 7. Monitoring | **częściowo**: Uptime Kuma ✓, Beszel ✗ (**następny krok**) |
+| 7. Monitoring | **gotowe** (2026-09-24): Uptime Kuma + Beszel |
 | 8. Tailscale | **gotowe** (2026-09-24), świadomie przed krokiem 7, bo krok 6 stoi przez brak sprzętu |
 | 9. Syncthing | nie rozpoczęte |
 
 Istnieje `/srv/homelab/data/` z podkatalogami `adguard/`, `caddy/`, `mealie/`,
-`uptime-kuma/`.
+`uptime-kuma/`, `beszel/`.
 Nie istnieją `/mnt/hdd` ani `/mnt/hdd/backups` — czekają na podłączenie dysku.
 
 ## Znane odstępstwa i dług techniczny
@@ -213,3 +220,5 @@ Kolejność chronologiczna, najstarsze u góry.
   zajęte 41641/udp, ~60 MiB RAM; krok 8 przed 7, świadomie
 - 2026-09-24 — uruchomiony Uptime Kuma `2.5.5-slim-rootless` za Caddy jako
   `uptime-kuma.home.figielak.dev`; alerty przez ntfy; ~122 MiB RAM
+- 2026-09-24 — uruchomiony Beszel `0.20.0` (hub + agent + socket proxy);
+  zajęte `127.0.0.1:2375`; krok 7 zamknięty

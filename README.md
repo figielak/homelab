@@ -40,6 +40,7 @@ scripts/         narzędzia, m.in. collect-host-state.sh
 | Mealie | `mealie.home.figielak.dev` | [docs](docs/services/mealie.md) |
 | Tailscale | — (zdalny dostęp, na hoście) | [docs](docs/services/tailscale.md) |
 | Uptime Kuma | `uptime-kuma.home.figielak.dev` | [docs](docs/services/uptime-kuma.md) |
+| Beszel | `beszel.home.figielak.dev` | [docs](docs/services/beszel.md) |
 
 Domena wewnętrzna `*.home.figielak.dev` rozwiązywana przez AdGuard (DNS rewrite),
 certyfikat wildcard od Let's Encrypt przez DNS-01 w Cloudflare. W Cloudflare
@@ -58,8 +59,8 @@ Deploy key jest read-only — Pi nigdy nie pushuje.
 
 ## Stan
 
-Kroki 1–5 kolejności wdrażania zamknięte (baza, repo, AdGuard, Caddy, Mealie).
-Krok 8 (Tailscale) wdrożony świadomie przed krokiem 7.
+Kroki 1–5 oraz 7–8 kolejności wdrażania zamknięte (baza, repo, AdGuard, Caddy,
+Mealie, monitoring, Tailscale). Krok 6 (backup) czeka na HDD.
 
 **Otwarte ryzyko: brak jakiegokolwiek backupu.** Szczegóły w długu technicznym
 notatki hosta.

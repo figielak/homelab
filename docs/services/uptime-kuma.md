@@ -61,6 +61,7 @@ nie budził alarmu.
 |---|---|---|---|
 | Mealie | HTTP(s) | `https://mealie.home.figielak.dev`, alert o wygasaniu certyfikatu | Caddy + TLS + Mealie; certyfikat wildcard |
 | AdGuard panel | HTTP(s) | `https://adguard.home.figielak.dev` | panel AdGuarda przez Caddy |
+| Beszel | HTTP(s) | `https://beszel.home.figielak.dev` | hub [[beszel]] przez Caddy |
 | AdGuard DNS | DNS | `example.com`, resolver `192.168.10.10:53` | AdGuard odpowiada jako resolver domu |
 | AdGuard rewrite | DNS | `mealie.home.figielak.dev`, resolver `192.168.10.10:53` | działa rewrite `*.home.figielak.dev` |
 
@@ -146,3 +147,4 @@ docker start mealie                    # push "up"
 - 2026-09-24 — stack utworzony, obraz `2.5.5-slim-rootless`, wystawiony przez
   [[caddy]] pod `uptime-kuma.home.figielak.dev`; 4 monitory, powiadomienia
   ntfy; test alertu (zatrzymanie Mealie) zaliczony; zużycie ~122 MiB
+- 2026-09-24 — dodany monitor Beszel
