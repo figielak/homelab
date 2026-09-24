@@ -38,6 +38,11 @@
 		reverse_proxy uptime-kuma:3001
 	}
 
+	@beszel host beszel.home.figielak.dev
+	handle @beszel {
+		reverse_proxy beszel:8090
+	}
+
 	# Nazwa pasujaca do wildcardu, ale nieprzypisana do zadnej uslugi.
 	# Bez tego Caddy zwrocilby pusta odpowiedz i diagnostyka bylaby trudniejsza.
 	handle {
