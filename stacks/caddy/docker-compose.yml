@@ -36,6 +36,10 @@ services:
       # /data trzyma certyfikaty i klucz konta ACME — to jest do backupu.
       - ${DATA_ROOT}/caddy/data:/data
       - ${DATA_ROOT}/caddy/config:/config
+      # Statyczna strona z docs/, budowana przez stack quartz. Montujemy
+      # katalog NADRZEDNY: build kasuje i tworzy public/ od nowa, a mount
+      # samego public/ zostalby przy starym, skasowanym katalogu.
+      - ${DATA_ROOT}/quartz:/srv/quartz:ro
 
     healthcheck:
       # Admin API Caddy slucha na 2019 tylko wewnatrz kontenera.

@@ -1,0 +1,34 @@
+# Zadanie jednorazowe, nie usluga. Uruchamiane recznie po zmianie docs/:
+#
+#   docker compose run --rm quartz
+#
+# Kontener buduje strone do ${DATA_ROOT}/quartz/public i znika.
+# Strone serwuje Caddy (file_server), wiec nic tu nie dziala na stale.
+services:
+  quartz:
+    build:
+      context: .
+      args:
+        # Tag w repo jackyzha0/quartz. Pluginy sa przypiete do commitow
+        # w quartz.lock.json tego tagu — wersja Quartza wyznacza caly zestaw.
+        # Podbicie wersji = zmiana tutaj, w `image` i w quartz.config.yaml.
+        QUARTZ_VERSION: v5.0.0
+    image: homelab/quartz:5.0.0
+    # Bez container_name: kontener istnieje tylko na czas `run --rm`.
+
+    # Obowiazuje tylko na czas budowania. Build nie wlicza sie do stalego
+    # budzetu RAM, ale w trakcie zajmuje pamiec obok reszty uslug.
+    mem_limit: 1g
+
+    # Domyslnie tyle watkow, ile rdzeni (4). Mniej watkow = mniej RAM
+    # kosztem czasu; przy kilkudziesieciu notatkach czas nie gra roli.
+    command: ["--concurrency", "2"]
+
+    volumes:
+      # Tresc: katalog docs/ z tego repo, tylko do odczytu.
+      - ../../docs:/content:ro
+      # Pojedynczy plik jest tu bezpieczny, mimo `git pull`: kontener
+      # powstaje od nowa przy kazdym `run`, wiec zawsze widzi aktualna wersje.
+      - ./quartz.config.yaml:/quartz/quartz.config.yaml:ro
+      # Wynik trafia do public/ wewnatrz — patrz komentarz w Dockerfile.
+      - ${DATA_ROOT}/quartz:/out

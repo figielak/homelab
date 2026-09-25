@@ -45,6 +45,7 @@ scripts/         narzędzia, m.in. collect-host-state.sh
 | Calibre-Web | `calibre.home.figielak.dev` | [docs](docs/services/calibre-web.md) |
 | MeTube | `metube.home.figielak.dev` | [docs](docs/services/metube.md) |
 | Opengist | `opengist.home.figielak.dev` | [docs](docs/services/opengist.md) |
+| Quartz | `quartz.home.figielak.dev` (strona z `docs/`) | [docs](docs/services/quartz.md) |
 
 Domena wewnętrzna `*.home.figielak.dev` rozwiązywana przez AdGuard (DNS rewrite),
 certyfikat wildcard od Let's Encrypt przez DNS-01 w Cloudflare. W Cloudflare

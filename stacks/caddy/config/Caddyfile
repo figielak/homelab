@@ -68,6 +68,17 @@
 		reverse_proxy opengist:6157
 	}
 
+	@quartz host quartz.home.figielak.dev
+	handle @quartz {
+		# Nie proxy, tylko pliki z dysku — strone generuje stack quartz.
+		root * /srv/quartz/public
+		# Quartz linkuje bez rozszerzenia .html (/hosts/castle),
+		# a na dysku lezy hosts/castle.html.
+		try_files {path} {path}.html {path}/ =404
+		encode gzip
+		file_server
+	}
+
 	# Nazwa pasujaca do wildcardu, ale nieprzypisana do zadnej uslugi.
 	# Bez tego Caddy zwrocilby pusta odpowiedz i diagnostyka bylaby trudniejsza.
 	handle {
