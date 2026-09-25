@@ -1,0 +1,45 @@
+services:
+  opengist:
+    # Manifest ma linux/arm64 (sprawdzone w ghcr.io 2026-09-25).
+    # Dokumentacja podaje tag :1 — pinujemy pelna wersje.
+    image: ghcr.io/thomiceli/opengist:1.15.2
+    container_name: opengist
+    restart: unless-stopped
+
+    # Pojedynczy binarny plik Go + SQLite + indeks bleve. Szacunek:
+    # ~40-80 MiB w spoczynku. Do potwierdzenia pomiarem w stanie ustalonym.
+    mem_limit: 256m
+
+    environment:
+      # Pliki naleza do figielak (UID 1000), jak w Mealie i Calibre-Web.
+      # Entrypoint startuje jako root, robi chown /opengist i zrzuca uprawnienia.
+      UID: 1000
+      GID: 1000
+      # Runtime Go nie widzi mem_limit — bez tego GC nie wie, ze ma sufit,
+      # i przy wiekszym pushu kontener dostaje OOM kill zamiast posprzatac.
+      GOMEMLIMIT: 200MiB
+      # Bez tego linki do klonowania i embedy biora adres z naglowkow zadania.
+      OG_EXTERNAL_URL: https://opengist.home.figielak.dev
+      # Wbudowany serwer SSH wymaga portu 2222 na hoscie, a kontenery
+      # aplikacyjne nie publikuja portow. Git dziala dalej przez HTTPS.
+      OG_SSH_GIT_ENABLED: disabled
+      # Domyslnie takze do pliku w katalogu danych, bez rotacji —
+      # rosnalby na SSD. Logi i tak czytamy przez docker compose logs.
+      OG_LOG_OUTPUT: stdout
+      # secret-key celowo nieustawiony: Opengist generuje go przy pierwszym
+      # starcie do opengist-secret.key w katalogu danych. Szyfruje nim dane
+      # MFA w bazie, wiec plik musi trafic do backupu razem z baza.
+
+    volumes:
+      # opengist.db, repos/ (gole repozytoria git), opengist-secret.key,
+      # opengist.index (indeks wyszukiwania, odtwarzalny).
+      - ${DATA_ROOT}/opengist:/opengist
+
+    # Healthcheck definiuje sam obraz (curl na :6157/healthcheck), nie powielamy go.
+
+    networks:
+      - proxy
+
+networks:
+  proxy:
+    external: true

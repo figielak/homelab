@@ -62,6 +62,12 @@
 		reverse_proxy metube:8081
 	}
 
+	@opengist host opengist.home.figielak.dev
+	handle @opengist {
+		# Przez ten sam adres idzie tez git clone/push po HTTPS.
+		reverse_proxy opengist:6157
+	}
+
 	# Nazwa pasujaca do wildcardu, ale nieprzypisana do zadnej uslugi.
 	# Bez tego Caddy zwrocilby pusta odpowiedz i diagnostyka bylaby trudniejsza.
 	handle {
