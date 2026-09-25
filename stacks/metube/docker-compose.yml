@@ -16,8 +16,10 @@ services:
       # Pliki naleza do figielak (UID 1000), jak w Mealie i Calibre-Web.
       PUID: 1000
       PGID: 1000
-      # Domyslnie 3. Na Pi po Wi-Fi 2 wystarcza i ogranicza szczyty RAM.
-      MAX_CONCURRENT_DOWNLOADS: 2
+      # Domyslnie 3. Jedno pobieranie ze scalaniem ffmpeg to ~400 MiB
+      # (2026-09-25), dwa naraz moglyby przekroczyc mem_limit. Na Wi-Fi
+      # rownolegle pobieranie i tak niewiele przyspiesza.
+      MAX_CONCURRENT_DOWNLOADS: 1
       # Stan (kolejka, historia, subskrypcje) poza katalogiem pobran —
       # pobrania pojada kiedys na HDD, stan zostaje przy reszcie danych.
       STATE_DIR: /state
