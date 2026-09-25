@@ -1,0 +1,38 @@
+services:
+  calibre-web:
+    # Obraz linuxserver ma build arm64. Konwersji formatow (mod
+    # universal-calibre) swiadomie nie wlaczamy — dziala tylko na x86-64.
+    image: lscr.io/linuxserver/calibre-web:0.6.27-ls402
+    container_name: calibre-web
+    restart: unless-stopped
+
+    # Aplikacja Flask, kilku uzytkownikow — szacunek ~100-200 MiB.
+    # Do potwierdzenia pomiarem w stanie ustalonym.
+    mem_limit: 256m
+
+    environment:
+      # Dane naleza do figielak (UID 1000), jak w Mealie.
+      PUID: 1000
+      PGID: 1000
+      TZ: Europe/Warsaw
+
+    volumes:
+      # app.db: uzytkownicy, ustawienia, postep czytania.
+      - ${DATA_ROOT}/calibre-web/config:/config
+      # Biblioteka Calibre: metadata.db + pliki ksiazek.
+      # Musi istniec przed pierwszym startem — Calibre-Web jej nie tworzy.
+      - ${DATA_ROOT}/calibre-web/library:/books
+
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:8083/ > /dev/null || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+    networks:
+      - proxy
+
+networks:
+  proxy:
+    external: true
