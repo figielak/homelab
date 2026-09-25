@@ -103,8 +103,8 @@ usłudze odnotuj tu przydział.
 | `beszel` (hub + agent + proxy) | 128 + 64 + 64 MiB | ~12 + 5 + 18 MiB | działa od 2026-09-24; **pomiar tuż po starcie**, do powtórzenia |
 | `dashboard-agent` | 64 MiB | ~13 MiB | działa od 2026-09-24 |
 | `calibre-web` | 256 MiB | ~203 MiB | działa od 2026-09-25; **79% limitu**, do obserwacji |
-| `metube` | 512 MiB | — | do wdrożenia; zmierzyć **w trakcie pobierania** |
-| **Przydzielone razem** | **2,85 GiB** | **~755 MiB** | pozostaje ~0,55 GiB z dostępnych |
+| `metube` | 512 MiB | ~65 MiB | działa od 2026-09-25; **pomiar w spoczynku**, szczyt przy pobieraniu do zmierzenia |
+| **Przydzielone razem** | **2,85 GiB** | **~820 MiB** | pozostaje ~0,55 GiB z dostępnych |
 
 Pomiary ze stanu ustalonego (po restarcie, z załadowanymi listami filtrów).
 Tuż po `docker compose up` wartości są o połowę niższe i wprowadzają w błąd.
@@ -232,3 +232,5 @@ Kolejność chronologiczna, najstarsze u góry.
   co 60 s), ~13 MiB RAM; retencja statystyk AdGuarda zmieniona na 7 dni
 - 2026-09-25 — uruchomiony Calibre-Web `0.6.27-ls402` za Caddy jako
   `calibre.home.figielak.dev`; bez portów na hoście; ~203 MiB RAM
+- 2026-09-25 — uruchomiony MeTube `2026.09.25` za Caddy (`basic_auth`) jako
+  `metube.home.figielak.dev`; pobrania na SSD do czasu HDD; ~65 MiB RAM w spoczynku

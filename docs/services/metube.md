@@ -25,7 +25,7 @@ robi to samo, ale wymaga SSH, a MeTube działa z telefonu.
 | Dane | `/srv/homelab/data/metube/` (właściciel `figielak`, UID 1000) |
 | Stack | `stacks/metube/` |
 | Obraz | `ghcr.io/alexta69/metube:2026.09.25` (manifest ma `arm64`) |
-| RAM | `mem_limit` 512 MiB, szacunek ~100–150 MiB w spoczynku, **do zmierzenia w trakcie pobierania** |
+| RAM | `mem_limit` 512 MiB, **zmierzone ~65 MiB w spoczynku** (2026-09-25); szczyt przy pobieraniu do zmierzenia |
 
 | Katalog | W kontenerze | Zawartość |
 |---|---|---|
