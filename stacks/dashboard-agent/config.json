@@ -11,6 +11,7 @@
     "Mealie": ["Mealie"],
     "AdGuard": ["AdGuard panel", "AdGuard DNS", "AdGuard rewrite"],
     "Uptime Kuma": ["Uptime Kuma"],
-    "Beszel": ["Beszel"]
+    "Beszel": ["Beszel"],
+    "Calibre-Web": ["Calibre-Web"]
   }
 }

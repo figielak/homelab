@@ -32,7 +32,7 @@ dopiero przy masowym zasilaniu biblioteki, np. z Syncthinga (krok 9).
 | Dane | `/srv/homelab/data/calibre-web/` (właściciel `figielak`, UID 1000) |
 | Stack | `stacks/calibre-web/` |
 | Obraz | `lscr.io/linuxserver/calibre-web:0.6.27-ls402` (manifest ma `arm64`) |
-| RAM | `mem_limit` 256 MiB |
+| RAM | `mem_limit` 256 MiB, **zmierzone ~203 MiB** (2026-09-25, pusta biblioteka) |
 
 Dwa podkatalogi danych, dwie bazy SQLite:
 

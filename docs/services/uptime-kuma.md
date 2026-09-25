@@ -64,6 +64,7 @@ nie budził alarmu.
 | Mealie | HTTP(s) | `https://mealie.home.figielak.dev`, alert o wygasaniu certyfikatu | Caddy + TLS + Mealie; certyfikat wildcard |
 | AdGuard panel | HTTP(s) | `https://adguard.home.figielak.dev` | panel AdGuarda przez Caddy |
 | Beszel | HTTP(s) | `https://beszel.home.figielak.dev` | hub [[beszel]] przez Caddy |
+| Calibre-Web | HTTP(s) | `https://calibre.home.figielak.dev` | [[calibre-web]] przez Caddy |
 | Uptime Kuma | HTTP(s) | `https://uptime-kuma.home.figielak.dev` | panel Kumy przez Caddy; własnej śmierci nie zgłosi (patrz niżej) |
 | AdGuard DNS | DNS | `example.com`, resolver `192.168.10.10:53` | AdGuard odpowiada jako resolver domu |
 | AdGuard rewrite | DNS | `mealie.home.figielak.dev`, resolver `192.168.10.10:53` | działa rewrite `*.home.figielak.dev` |

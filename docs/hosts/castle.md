@@ -102,8 +102,8 @@ usłudze odnotuj tu przydział.
 | `uptime-kuma` | 256 MiB | ~122 MiB | działa od 2026-09-24 |
 | `beszel` (hub + agent + proxy) | 128 + 64 + 64 MiB | ~12 + 5 + 18 MiB | działa od 2026-09-24; **pomiar tuż po starcie**, do powtórzenia |
 | `dashboard-agent` | 64 MiB | ~13 MiB | działa od 2026-09-24 |
-| `calibre-web` | 256 MiB | — | w repo, niewdrożony; zmierzyć po starcie |
-| **Przydzielone razem** | **2,35 GiB** | **~550 MiB** | pozostaje ~1,05 GiB z dostępnych |
+| `calibre-web` | 256 MiB | ~203 MiB | działa od 2026-09-25; **79% limitu**, do obserwacji |
+| **Przydzielone razem** | **2,35 GiB** | **~755 MiB** | pozostaje ~1,05 GiB z dostępnych |
 
 Pomiary ze stanu ustalonego (po restarcie, z załadowanymi listami filtrów).
 Tuż po `docker compose up` wartości są o połowę niższe i wprowadzają w błąd.
@@ -229,3 +229,5 @@ Kolejność chronologiczna, najstarsze u góry.
   zajęte `127.0.0.1:2375`; krok 7 zamknięty
 - 2026-09-24 — uruchomiony `dashboard-agent` (push statystyk na figielak.dev
   co 60 s), ~13 MiB RAM; retencja statystyk AdGuarda zmieniona na 7 dni
+- 2026-09-25 — uruchomiony Calibre-Web `0.6.27-ls402` za Caddy jako
+  `calibre.home.figielak.dev`; bez portów na hoście; ~203 MiB RAM
