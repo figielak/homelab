@@ -205,6 +205,10 @@ do endpointu.
 - **Agent loguje wyłącznie błędy.** Puste logi oznaczają, że wszystko działa.
   Postęp widać po `last_ok`. Wyjątek: stale wpisy „brak monitorow” znaczą, że
   usługa z `config.json` nie ma jeszcze monitora w Kumie.
+- **Po zmianie `agent.py` albo `config.json` trzeba zrestartować kontener**
+  (`docker compose restart dashboard-agent`). Pliki są montowane, więc
+  `git pull` ich nie przeładuje, a `docker compose up -d` nie widzi zmian
+  i nie tworzy kontenera od nowa.
 - **Gdy padnie Kuma, sekcje `services` i `monitors` przestają przychodzić.**
   Strona pokazuje wtedy ich wiek. Monitor „Uptime Kuma” nie zgłosi śmierci
   samej Kumy.
