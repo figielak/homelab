@@ -40,8 +40,8 @@ a pliki serwuje istniejący już [[caddy]]. Stały koszt RAM: 0.
 | Rozmiar obrazu | **~4,7 GB** (pluginy z własnymi `node_modules`) |
 | RAM | tylko na czas budowania, `mem_limit` 1 GiB, `--concurrency 2` |
 
-Czas (laptop x86, 2026-09-25): obraz ~2 min, strona z 12 notatek **3 s**.
-Na Pi do zmierzenia.
+Czas budowy strony (2026-09-25): laptop x86 **3 s**, `castle` **16 s**
+(14 notatek, z czego 15 s to parsowanie). Obraz: laptop ~2 min, na Pi niezmierzone.
 
 ### Jak to jest złożone
 
@@ -82,7 +82,7 @@ cd /opt/homelab && git pull --ff-only
 cd stacks/quartz && docker compose run --rm quartz
 ```
 
-W trakcie budowania (kilka sekund) strona jest pusta, bo build najpierw
+W trakcie budowania (~16 s na Pi) strona jest pusta, bo build najpierw
 kasuje `public/`. Przy domowym użyciu bez znaczenia.
 
 ## Procedura odtworzenia od zera

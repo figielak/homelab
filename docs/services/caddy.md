@@ -54,6 +54,7 @@ nazw. Powody:
 | Stack | `stacks/caddy/` |
 | Obraz | `homelab/caddy:2.11.4-cf0.2.4` (budowany lokalnie) |
 | Sieć | `proxy` (external) |
+| Pliki statyczne | `/srv/homelab/data/quartz` → `/srv/quartz` (ro), strona [[quartz]] |
 | Sekrety | `CF_API_TOKEN` — menedżer haseł, „Homelab Cloudflare DNS token" |
 
 ## Zależności
@@ -145,6 +146,25 @@ Przeładowanie bez restartu:
 docker compose exec caddy caddy reload --config /etc/caddy/Caddyfile
 ```
 
+**Sam `git pull` niczego nie zmienia** — Caddy trzyma konfigurację w pamięci.
+Po zmianie trzeba wykonać jedno z dwojga, zależnie od tego, co się zmieniło:
+
+| Zmiana | Polecenie w `stacks/caddy` |
+|---|---|
+| tylko `Caddyfile` | `docker compose exec caddy caddy reload --config /etc/caddy/Caddyfile` |
+| `docker-compose.yml` (mount, zmienna, port) | `docker compose up -d` — odtwarza kontener; `reload` tego nie widzi |
+
+Po `up -d` sprawdź, że kontener faktycznie powstał od nowa:
+`docker compose ps --format '{{.Name}}  {{.RunningFor}}'` → „… seconds ago”.
+
+### Pliki statyczne zamiast proxy
+
+Dla strony bez własnego serwera (np. [[quartz]]) Caddy serwuje pliki z dysku:
+mount w `docker-compose.yml` + `root` i `file_server` w bloku zamiast
+`reverse_proxy`. Montuj **katalog nadrzędny** wyniku, jeśli generator
+kasuje i tworzy katalog wyjściowy od nowa — to ta sama pułapka i-węzła co
+przy `Caddyfile` (patrz „Znane problemy”).
+
 Certyfikat wildcard obejmuje nową nazwę automatycznie — nie trzeba go wydawać
 ponownie.
 
@@ -167,6 +187,11 @@ ponownie.
   treścią, a `caddy reload` raportował sukces po wczytaniu starego pliku —
   objaw jest mylący, bo wszystko wygląda na działające.
   Wpadliśmy w to 2026-09-21 przy dodawaniu [[mealie]].
+- **`Brak takiej uslugi w homelabie` przy aktualnym `Caddyfile`** = Caddy nie
+  wczytał zmian: pominięty `reload` albo `up -d`. Sprawdzenie:
+  `docker compose exec caddy grep -c <nazwa> /etc/caddy/Caddyfile` (plik jest)
+  i `docker compose ps` (od kiedy działa kontener). Trafiło się 2026-09-25
+  dwa razy: przy [[opengist]] i [[quartz]].
 
 ## Log zmian
 
@@ -175,3 +200,5 @@ ponownie.
   DNS `figielak.dev` przeniesiony z name.com do Cloudflare
 - 2026-09-21 — `Caddyfile` przeniesiony do `config/`, montowany jako katalog
   zamiast pojedynczego pliku (patrz „Znane problemy")
+- 2026-09-25 — mount `/srv/quartz` (ro) i pierwszy blok z `file_server`
+  zamiast `reverse_proxy`: statyczna strona [[quartz]]

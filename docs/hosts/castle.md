@@ -137,7 +137,8 @@ Kolejność z `CLAUDE.md`:
 | 9. Syncthing | nie rozpoczęte |
 
 Istnieje `/srv/homelab/data/` z podkatalogami `adguard/`, `caddy/`, `mealie/`,
-`uptime-kuma/`, `beszel/`, `dashboard-agent/`.
+`uptime-kuma/`, `beszel/`, `dashboard-agent/`, `calibre-web/`, `metube/`,
+`opengist/`, `quartz/`. Z tych danych `quartz/` jest w całości odtwarzalny z repo.
 Nie istnieją `/mnt/hdd` ani `/mnt/hdd/backups` — czekają na podłączenie dysku.
 
 ## Znane odstępstwa i dług techniczny
