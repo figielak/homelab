@@ -1,0 +1,44 @@
+services:
+  metube:
+    # Manifest ma linux/arm64. Tag = data wydania; nowe wydanie wychodzi
+    # przy kazdym stabilnym yt-dlp, wiec ten pin trzeba podbijac czesciej
+    # niz inne — zepsute pobieranie z YouTube to zwykle za stary yt-dlp.
+    image: ghcr.io/alexta69/metube:2026.09.25
+    container_name: metube
+    restart: unless-stopped
+
+    # Serwer Python + osobny proces yt-dlp na kazde pobieranie + ffmpeg
+    # przy scalaniu audio i wideo. Szacunek: ~100-150 MiB w spoczynku,
+    # szczyty przy scalaniu. Do potwierdzenia pomiarem w trakcie pobierania.
+    mem_limit: 512m
+
+    environment:
+      # Pliki naleza do figielak (UID 1000), jak w Mealie i Calibre-Web.
+      PUID: 1000
+      PGID: 1000
+      # Domyslnie 3. Na Pi po Wi-Fi 2 wystarcza i ogranicza szczyty RAM.
+      MAX_CONCURRENT_DOWNLOADS: 2
+      # Stan (kolejka, historia, subskrypcje) poza katalogiem pobran —
+      # pobrania pojada kiedys na HDD, stan zostaje przy reszcie danych.
+      STATE_DIR: /state
+      # Usuniecie pozycji z listy "Completed" kasuje tez plik. Bez tego
+      # z UI nie da sie zwolnic miejsca, a pobrania leza na SSD systemu.
+      DELETE_FILE_ON_TRASHCAN: "true"
+      # CORS_ALLOWED_ORIGINS celowo nieustawione = inne strony nie moga
+      # zlecac pobran. ALLOW_YTDL_OPTIONS_OVERRIDES zostaje domyslne (false),
+      # bo wlaczone pozwala na wykonanie kodu w kontenerze.
+
+    volumes:
+      # queue.json, completed.json, subscriptions.json — male, do backupu.
+      - ${DATA_ROOT}/metube/state:/state
+      # Pobrane pliki. Sciezka z .env, bo docelowo zmieni sie na HDD.
+      - ${DOWNLOADS_DIR}:/downloads
+
+    # Healthcheck definiuje sam obraz (curl na :8081), nie powielamy go.
+
+    networks:
+      - proxy
+
+networks:
+  proxy:
+    external: true

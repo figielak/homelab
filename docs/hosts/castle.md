@@ -103,7 +103,8 @@ usłudze odnotuj tu przydział.
 | `beszel` (hub + agent + proxy) | 128 + 64 + 64 MiB | ~12 + 5 + 18 MiB | działa od 2026-09-24; **pomiar tuż po starcie**, do powtórzenia |
 | `dashboard-agent` | 64 MiB | ~13 MiB | działa od 2026-09-24 |
 | `calibre-web` | 256 MiB | ~203 MiB | działa od 2026-09-25; **79% limitu**, do obserwacji |
-| **Przydzielone razem** | **2,35 GiB** | **~755 MiB** | pozostaje ~1,05 GiB z dostępnych |
+| `metube` | 512 MiB | — | do wdrożenia; zmierzyć **w trakcie pobierania** |
+| **Przydzielone razem** | **2,85 GiB** | **~755 MiB** | pozostaje ~0,55 GiB z dostępnych |
 
 Pomiary ze stanu ustalonego (po restarcie, z załadowanymi listami filtrów).
 Tuż po `docker compose up` wartości są o połowę niższe i wprowadzają w błąd.

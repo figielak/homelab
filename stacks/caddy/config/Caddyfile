@@ -51,6 +51,17 @@
 		reverse_proxy calibre-web:8083
 	}
 
+	@metube host metube.home.figielak.dev
+	handle @metube {
+		# MeTube nie ma wlasnego logowania, a pobrania zapelniaja SSD
+		# calego hosta. Bramka na proxy; hash hasla (bcrypt) w .env.
+		basic_auth {
+			{$METUBE_AUTH_USER} {$METUBE_AUTH_HASH}
+		}
+		# Postep pobierania idzie WebSocketem — Caddy przepuszcza go domyslnie.
+		reverse_proxy metube:8081
+	}
+
 	# Nazwa pasujaca do wildcardu, ale nieprzypisana do zadnej uslugi.
 	# Bez tego Caddy zwrocilby pusta odpowiedz i diagnostyka bylaby trudniejsza.
 	handle {

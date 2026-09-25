@@ -43,6 +43,7 @@ scripts/         narzędzia, m.in. collect-host-state.sh
 | Beszel | `beszel.home.figielak.dev` | [docs](docs/services/beszel.md) |
 | Dashboard agent | — (push na figielak.dev) | [docs](docs/services/dashboard-agent.md) |
 | Calibre-Web | `calibre.home.figielak.dev` | [docs](docs/services/calibre-web.md) |
+| MeTube | `metube.home.figielak.dev` | [docs](docs/services/metube.md) |
 
 Domena wewnętrzna `*.home.figielak.dev` rozwiązywana przez AdGuard (DNS rewrite),
 certyfikat wildcard od Let's Encrypt przez DNS-01 w Cloudflare. W Cloudflare

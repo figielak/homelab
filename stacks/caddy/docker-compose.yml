@@ -24,6 +24,8 @@ services:
       CF_API_TOKEN: ${CF_API_TOKEN}
       ACME_EMAIL: ${ACME_EMAIL}
       HOST_IP: ${HOST_IP}
+      METUBE_AUTH_USER: ${METUBE_AUTH_USER}
+      METUBE_AUTH_HASH: ${METUBE_AUTH_HASH}
 
     volumes:
       # Montujemy KATALOG, nie pojedynczy plik. Bind mount pliku wiaze
