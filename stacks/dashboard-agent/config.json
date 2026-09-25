@@ -6,5 +6,11 @@
   ],
   "services": {
     "dns": ["AdGuard DNS", "AdGuard rewrite"]
+  },
+  "monitors": {
+    "Mealie": ["Mealie"],
+    "AdGuard": ["AdGuard panel", "AdGuard DNS", "AdGuard rewrite"],
+    "Uptime Kuma": ["Uptime Kuma"],
+    "Beszel": ["Beszel"]
   }
 }

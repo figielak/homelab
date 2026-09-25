@@ -13,6 +13,7 @@ import os
 import re
 import sys
 import time
+import urllib.error
 import urllib.request
 
 CONFIG_PATH = "/app/config.json"
@@ -221,29 +222,135 @@ def parse_kuma_metrics(text):
     return monitors
 
 
-def collect_services(config):
+def fetch_kuma():
     _, body = http(env("KUMA_URL").rstrip("/") + "/metrics", basic_auth("", env("KUMA_API_KEY")))
-    monitors = parse_kuma_metrics(body.decode())
+    return parse_kuma_metrics(body.decode())
 
+
+def aggregate(monitors, names, label):
+    """Kilka monitorow Kumy -> jeden stan. None, gdy zadnego nie ma."""
+    found = [monitors[n] for n in names if "status" in monitors.get(n, {})]
+    missing = [n for n in names if n not in monitors]
+    if missing:
+        log(f"{label}: brak monitorow {missing}")
+    if not found:
+        return None
+
+    # 0 = down; 1 = up, 2 = pending (ponawianie), 3 = maintenance
+    state = {"up": all(m["status"] != 0 for m in found)}
+    uptimes = [m["uptime30d"] for m in found if "uptime30d" in m]
+    pings = [m["avg30d"] for m in found if "avg30d" in m]
+    if uptimes:
+        state["uptime30d"] = round(min(uptimes) * 100, 2)
+    if pings:
+        state["avgMs"] = round(sum(pings) / len(pings) * 1000)
+    return state
+
+
+def collect_services(config, kuma):
     services = []
     for kind, names in config["services"].items():
-        found = [monitors[n] for n in names if "status" in monitors.get(n, {})]
-        missing = [n for n in names if n not in monitors]
-        if missing:
-            log(f"services.{kind}: brak monitorow {missing}")
-        if not found:
-            continue
-
-        # 0 = down; 1 = up, 2 = pending (ponawianie), 3 = maintenance
-        service = {"kind": kind, "up": all(m["status"] != 0 for m in found)}
-        uptimes = [m["uptime30d"] for m in found if "uptime30d" in m]
-        pings = [m["avg30d"] for m in found if "avg30d" in m]
-        if uptimes:
-            service["uptime30d"] = round(min(uptimes) * 100, 2)
-        if pings:
-            service["avgMs"] = round(sum(pings) / len(pings) * 1000)
-        services.append(service)
+        state = aggregate(kuma, names, f"services.{kind}")
+        if state:
+            services.append({"kind": kind, **state})
     return services
+
+
+# --- sekcje prywatne ----------------------------------------------------
+# Strona trzyma je osobno i pokazuje tylko za haslem, wiec moga niesc nazwy
+# monitorow i kontenerow. Nazwy hostow, domen, IP i URL-e dalej nie wychodza:
+# serwer przyjmuje tylko "zwykle" nazwy, a agent sprawdza je przed wysylka.
+
+CONTAINER_STATES = {"running", "restarting", "paused", "exited", "created", "dead"}
+CONTAINER_HEALTH = (("(healthy)", "healthy"), ("(unhealthy)", "unhealthy"),
+                    ("(health: starting)", "starting"))
+BACKUP_TOOLS = {"restic", "borg", "kopia"}
+BACKUP_PATH = os.path.join(DATA_DIR, "last-backup.json")
+MAX_CLOCK_SKEW = datetime.timedelta(minutes=5)
+
+
+def plain_name(name):
+    """Odpowiednik ^[\\p{L}\\p{N}][\\p{L}\\p{N} _-]{0,39}$ z homelab.ts strony:
+    bez kropek, dwukropkow i ukosnikow, wiec nie przejdzie host, URL ani IP."""
+    return (isinstance(name, str) and 1 <= len(name) <= 40 and name[0].isalnum()
+            and all(c.isalnum() or c in " _-" for c in name))
+
+
+def plain_names(items, label, limit):
+    """Odrzuca (i loguje) nazwy spoza wzorca i duplikaty; nie "naprawia" ich."""
+    out, seen = [], set()
+    for item in items:
+        if not plain_name(item["name"]) or item["name"] in seen:
+            log(f"{label}: pomijam nazwe {item['name']!r}")
+            continue
+        seen.add(item["name"])
+        out.append(item)
+    if len(out) > limit:
+        log(f"{label}: {len(out)} wpisow, wysylam {limit}")
+    return out[:limit]
+
+
+def collect_monitors(config, kuma):
+    """Jeden wpis na usluge z paska na stronie; nazwa musi sie zgadzac
+    z src/lib/services.ts strony. Usluga bez monitora nie jest wysylana."""
+    monitors = []
+    for name, names in config["monitors"].items():
+        state = aggregate(kuma, names, f"monitors.{name}")
+        if state:
+            monitors.append({"name": name, **state})
+    return plain_names(monitors, "monitors", 30)
+
+
+def collect_containers():
+    _, body = http(env("DOCKER_URL").rstrip("/") + "/containers/json?all=1")
+    containers = []
+    for c in json.loads(body):
+        name = (c.get("Names") or [""])[0].lstrip("/")
+        if c.get("State") not in CONTAINER_STATES:
+            log(f"containers: {name!r} ma nieznany stan {c.get('State')!r}")
+            continue
+        container = {"name": name, "state": c["State"]}
+        status = c.get("Status", "")
+        for marker, health in CONTAINER_HEALTH:
+            if marker in status:
+                container["health"] = health
+                break
+        containers.append(container)
+    return plain_names(containers, "containers", 60)
+
+
+def collect_backup():
+    """Plik statusu zapisuje zadanie backupu (format: docs/services/
+    dashboard-agent.md). Agent nie ma dostepu do repozytorium ani hasla.
+    Brak pliku = backupu jeszcze nie ma, sekcja nie jest wysylana."""
+    try:
+        with open(BACKUP_PATH) as f:
+            raw = json.load(f)
+    except FileNotFoundError:
+        return None
+
+    tool, ok = raw.get("tool"), raw.get("ok")
+    if tool not in BACKUP_TOOLS:
+        raise ValueError(f"nieznane narzedzie {tool!r}")
+    if not isinstance(ok, bool):
+        raise ValueError("ok nie jest bool")
+    last = datetime.datetime.fromisoformat(raw["lastRunAt"].replace("Z", "+00:00"))
+    if last.tzinfo is None:
+        raise ValueError("lastRunAt bez strefy czasowej")
+    if last > datetime.datetime.now(datetime.timezone.utc) + MAX_CLOCK_SKEW:
+        raise ValueError("lastRunAt z przyszlosci")
+
+    backup = {"tool": tool, "lastRunAt": last.isoformat(timespec="seconds"), "ok": ok}
+    size, snapshots = raw.get("sizeGb"), raw.get("snapshots")
+    if size is not None:
+        if isinstance(size, bool) or not isinstance(size, (int, float)) or size < 0:
+            raise ValueError("sizeGb poza zakresem")
+        backup["sizeGb"] = round(size, 2)
+    if snapshots is not None:
+        if isinstance(snapshots, bool) or not isinstance(snapshots, int) or snapshots < 0:
+            raise ValueError("snapshots poza zakresem")
+        backup["snapshots"] = snapshots
+    return backup
 
 
 # --- petla --------------------------------------------------------------
@@ -253,15 +360,30 @@ def collect(config, state):
     payload = {"v": 1}
     new_state = state
 
-    for key, fn in (
+    sections = [
         ("lab", lambda: collect_lab(config)),
         ("dns", collect_dns),
-        ("services", lambda: collect_services(config)),
-    ):
+        ("containers", collect_containers),
+        ("backup", collect_backup),
+    ]
+    # Kuma pobierana raz; gdy nie odpowie, znikaja obie sekcje z niej.
+    try:
+        kuma = fetch_kuma()
+        sections += [
+            ("services", lambda: collect_services(config, kuma)),
+            ("monitors", lambda: collect_monitors(config, kuma)),
+        ]
+    except Exception as e:
+        log(f"kuma: {e}")
+
+    for key, fn in sections:
         try:
-            payload[key] = fn()
+            section = fn()
         except Exception as e:
             log(f"{key}: {e}")
+            continue
+        if section is not None:
+            payload[key] = section
 
     try:
         payload["traffic"], new_state = collect_traffic(config, state)
@@ -274,7 +396,15 @@ def collect(config, state):
 
 def push(payload):
     headers = {"Authorization": f"Bearer {env('PUSH_TOKEN')}", "Content-Type": "application/json"}
-    status, _ = http(env("PUSH_URL"), headers, json.dumps(payload).encode(), "POST")
+    try:
+        status, body = http(env("PUSH_URL"), headers, json.dumps(payload).encode(), "POST")
+    except urllib.error.HTTPError as e:
+        # Tresc odpowiedzi mowi, co bylo nie tak (np. "no valid section").
+        raise RuntimeError(f"HTTP {e.code}: {e.read()[:500].decode(errors='replace')}") from e
+    # 204 = wszystko zapisane; 200 = czesc sekcji odrzucona, z powodem.
+    if status == 200 and body:
+        for r in json.loads(body).get("rejected", []):
+            log(f"push: odrzucona sekcja {r.get('section')}: {r.get('reason')}")
     return status
 
 

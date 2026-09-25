@@ -4,7 +4,7 @@ Monitoring dostępności. Co minutę sprawdza usługi i DNS, a przy awarii
 i powrocie wysyła push na telefon przez ntfy. Pilnuje też wygasania
 certyfikatu wildcard.
 
-Pierwsza połowa kroku 7. Druga to Beszel (zasoby hosta), jeszcze nie wdrożony.
+Pierwsza połowa kroku 7. Druga to [[beszel]] (zasoby hosta).
 
 #usługa #monitoring
 
@@ -64,6 +64,7 @@ nie budził alarmu.
 | Mealie | HTTP(s) | `https://mealie.home.figielak.dev`, alert o wygasaniu certyfikatu | Caddy + TLS + Mealie; certyfikat wildcard |
 | AdGuard panel | HTTP(s) | `https://adguard.home.figielak.dev` | panel AdGuarda przez Caddy |
 | Beszel | HTTP(s) | `https://beszel.home.figielak.dev` | hub [[beszel]] przez Caddy |
+| Uptime Kuma | HTTP(s) | `https://uptime-kuma.home.figielak.dev` | panel Kumy przez Caddy; własnej śmierci nie zgłosi (patrz niżej) |
 | AdGuard DNS | DNS | `example.com`, resolver `192.168.10.10:53` | AdGuard odpowiada jako resolver domu |
 | AdGuard rewrite | DNS | `mealie.home.figielak.dev`, resolver `192.168.10.10:53` | działa rewrite `*.home.figielak.dev` |
 | Dashboard agent | Push | interwał 60 s, 2 ponowienia; URL w `.env` [[dashboard-agent]] | agent przestał wysyłać dane na stronę |
@@ -74,6 +75,10 @@ w Cloudflare. Monitory HTTP przechodzą więc nawet wtedy, gdy rewrite
 w AdGuardzie jest zepsuty.
 
 **Nowy stack = nowy monitor** tutaj i w tabeli.
+
+**Nazwy monitorów są częścią kontraktu.** [[dashboard-agent]] mapuje je
+w `config.json` na usługi z prywatnego dashboardu. Zmiana nazwy monitora
+w UI wymaga zmiany w `config.json`, inaczej kropka na stronie zrobi się szara.
 
 ## Zależności
 
@@ -152,3 +157,4 @@ docker start mealie                    # push "up"
   ntfy; test alertu (zatrzymanie Mealie) zaliczony; zużycie ~122 MiB
 - 2026-09-24 — dodany monitor Beszel
 - 2026-09-24 — API key i monitor Push dla [[dashboard-agent]]
+- 2026-09-25 — monitor „Uptime Kuma” (panel przez Caddy) dla prywatnego dashboardu
