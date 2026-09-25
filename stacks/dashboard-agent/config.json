@@ -12,6 +12,7 @@
     "AdGuard": ["AdGuard panel", "AdGuard DNS", "AdGuard rewrite"],
     "Uptime Kuma": ["Uptime Kuma"],
     "Beszel": ["Beszel"],
-    "Calibre-Web": ["Calibre-Web"]
+    "Calibre-Web": ["Calibre-Web"],
+    "MeTube": ["MeTube"]
   }
 }
