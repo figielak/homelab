@@ -6,6 +6,39 @@ do odbudowy infrastruktury od zera: to repozytorium + kopia danych.
 **Host:** `castle` — Raspberry Pi 4, 4 GB RAM, ARM64, Raspberry Pi OS Lite
 (Debian trixie), adres `192.168.10.10`.
 
+```mermaid
+flowchart LR
+    lan["Urządzenia w LAN"]
+    remote["Poza domem"]
+    cf["Cloudflare DNS-01<br/>Let's Encrypt"]
+    web["figielak.dev"]
+
+    subgraph castle["castle · Raspberry Pi 4"]
+        adguard["AdGuard Home<br/>:53 · network_mode: host"]
+        caddy["Caddy<br/>:80 · :443"]
+        tailscale["Tailscale<br/>(usługa systemowa)"]
+        quartz[("Quartz<br/>statyczny HTML")]
+        agents["beszel-agent<br/>dashboard-agent"]
+
+        subgraph proxy["sieć Docker: proxy"]
+            apps["Mealie · Uptime Kuma · Beszel<br/>Calibre-Web · MeTube · Opengist"]
+        end
+    end
+
+    lan -- "DNS *.home.figielak.dev" --> adguard
+    lan -- "HTTPS" --> caddy
+    remote -- "VPN" --> tailscale --> caddy
+    caddy --> apps
+    caddy -- "panel :3000" --> adguard
+    caddy -- "file_server" --> quartz
+    cf -. "certyfikat wildcard" .-> caddy
+    agents -. "push" .-> web
+```
+
+Każda usługa jest dostępna pod `https://<usługa>.home.figielak.dev`. Żaden
+kontener aplikacyjny nie publikuje portu na hoście, więc jedyną drogą do usług
+jest Caddy.
+
 ## Od czego zacząć
 
 1. [`docs/hosts/castle.md`](docs/hosts/castle.md) — **najważniejszy plik**.
@@ -30,6 +63,10 @@ scripts/         narzędzia, m.in. collect-host-state.sh
 - Obrazy pinowane do wersji, nigdy `:latest`
 - Sekrety w `.env` (w `.gitignore`), w repo tylko `.env.example`
 - Usługi wystawiane wyłącznie przez Caddy; kontenery nie publikują portów
+
+Repo jest publiczne świadomie, razem z opisanym w `docs/` długiem technicznym.
+Host ma tylko adres prywatny, SSH przyjmuje wyłącznie klucze, a z zewnątrz
+dostęp daje jedynie Tailscale. Sekrety i raporty audytu nigdy nie trafiają do Git.
 
 ## Uruchomione usługi
 

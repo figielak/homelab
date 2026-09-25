@@ -1,0 +1,4 @@
+# Pasek języków na GitHubie: YAML (compose'y) domyślnie nie jest liczony,
+# przez co repo wyglądało na projekt w Pythonie (jeden agent.py).
+*.yml  linguist-detectable
+*.yaml linguist-detectable
