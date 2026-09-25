@@ -114,6 +114,7 @@ przydział na limity, których nic nie wykorzystuje.
 | `calibre-web` | 256 MiB | ~203 MiB | działa od 2026-09-25; **79% limitu**, do obserwacji |
 | `metube` | 512 MiB | ~65 MiB | działa od 2026-09-25; w spoczynku; **szczyt ~400 MiB** przy pobieraniu 1080p (78% limitu) |
 | `opengist` | 256 MiB | ~90 MiB | działa od 2026-09-25; pusta instancja, pomiar tuż po starcie |
+| `quartz` | — (1 GiB na czas buildu) | 0 na stałe | od 2026-09-25; kontener tylko na czas `run --rm`, nie wlicza się do sumy |
 | **Przydzielone razem** | **3,10 GiB** | **~910 MiB** | ~0,3 GiB poniżej dostępnych; ~0,9 GiB do sufitu 4 GiB |
 
 Pomiary ze stanu ustalonego (po restarcie, z załadowanymi listami filtrów).
@@ -247,3 +248,5 @@ Kolejność chronologiczna, najstarsze u góry.
 - 2026-09-25 — uruchomiony Opengist `1.15.2` za Caddy jako
   `opengist.home.figielak.dev`; bez SSH, bez portów na hoście; ~90 MiB RAM
 - 2026-09-25 — dopuszczony lekki overcommit `mem_limit` (suma do ~4 GiB)
+- 2026-09-25 — Quartz `v5.0.0`: strona z `docs/` pod `quartz.home.figielak.dev`,
+  serwowana przez Caddy (nowy mount `/srv/quartz`); obraz ~4,7 GB, bez stałego RAM
