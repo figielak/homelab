@@ -114,6 +114,21 @@ curl -s -o /dev/null -w '%{http_code}\n' "http://127.0.0.1:2375/containers/caddy
 
 W UI: `castle` zielony, widoczne kontenery, temperatura i dysk (~117 GB, `/` na SSD).
 
+## Konfiguracja w UI
+
+Powiadomienia i alerty żyją w bazie huba, **nie w Git**. Ta sekcja to jedyna
+kopia poza bazą. Aktualizuj ją przy każdej zmianie w UI.
+
+- **Powiadomienia** (Settings → Notifications): `ntfy://ntfy.sh/<temat>`,
+  ten sam temat co w [[uptime-kuma]]. Nazwa tematu działa jak hasło:
+  menedżer haseł, „Homelab ntfy”.
+- **Alerty dla `castle`** (ikona dzwonka na liście systemów):
+
+| Alert | Próg | Dlaczego |
+|---|---|---|
+| Disk | 80% | pobrania [[metube]] leżą na SSD systemu; pełny dysk to awaria całego hosta, a z nim DNS domu |
+| Status | host przestał raportować | Kuma działa na tym samym hoście i jego śmierci nie zgłosi |
+
 ## Znane problemy i ograniczenia
 
 - **Inspect kontenera ujawnia jego zmienne środowiskowe.** `CONTAINERS=1`
@@ -133,3 +148,4 @@ W UI: `castle` zielony, widoczne kontenery, temperatura i dysk (~117 GB, `/` na 
 - 2026-09-24 — stack utworzony (`0.20.0` + socket proxy `3.4.4`), wystawiony
   przez [[caddy]] pod `beszel.home.figielak.dev`; ograniczenia proxy
   zweryfikowane (GET 200, POST i logi 403); temperatura i dysk widoczne
+- 2026-09-25 — powiadomienia ntfy, alerty Disk 80% i Status dla `castle`
