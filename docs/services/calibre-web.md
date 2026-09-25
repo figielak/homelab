@@ -24,8 +24,8 @@ dopiero przy masowym zasilaniu biblioteki, np. z Syncthinga (krok 9).
 
 | | |
 |---|---|
-| Host | [[castle]] |
-| URL | `https://calibre.home.figielak.dev` przez [[caddy]] |
+| Host | [castle](../hosts/castle.md) |
+| URL | `https://calibre.home.figielak.dev` przez [caddy](caddy.md) |
 | | Adres to `calibre`, a nie `calibre-web`. To wyjątek od reguły „nazwa = stack”, zrobiony dla wygody. |
 | OPDS | `https://calibre.home.figielak.dev/opds` (login jak do UI) |
 | Port | 8083 **wyłącznie wewnątrz sieci `proxy`**, nic na hoście |
@@ -43,7 +43,7 @@ Dwa podkatalogi danych, dwie bazy SQLite:
 
 ## Zależności
 
-- **Zależy od:** [[caddy]] (dostęp po nazwie i TLS), [[adguard]] (rozwiązywanie
+- **Zależy od:** [caddy](caddy.md) (dostęp po nazwie i TLS), [adguard](adguard.md) (rozwiązywanie
   nazwy), sieci `proxy`.
 - **Zależy od niej:** nic.
 
@@ -52,7 +52,7 @@ Dwa podkatalogi danych, dwie bazy SQLite:
 Cały katalog `/srv/homelab/data/calibre-web/`, czyli oba podkatalogi.
 Sama biblioteka bez `app.db` odtworzy książki, ale bez kont i postępu czytania.
 
-**SQLite ×2.** Ta sama uwaga co przy [[mealie]]: kopia działającej bazy może być
+**SQLite ×2.** Ta sama uwaga co przy [mealie](mealie.md): kopia działającej bazy może być
 niespójna. Przy restic albo zatrzymujemy kontener, albo robimy `sqlite3 .backup`
 dla `app.db` i `metadata.db`.
 
@@ -145,4 +145,4 @@ Domyślne konto: `admin` / `admin123`.
 ## Log zmian
 
 - 2026-09-25 — stack utworzony, obraz `0.6.27-ls402`, pusta biblioteka,
-  wystawiony przez [[caddy]] pod `calibre.home.figielak.dev`
+  wystawiony przez [caddy](caddy.md) pod `calibre.home.figielak.dev`

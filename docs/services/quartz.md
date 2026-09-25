@@ -1,7 +1,7 @@
 # Quartz
 
 Statyczna strona WWW z dokumentacji homelaba (`docs/`, czyli vault Obsidiana).
-Czytanie notatek z przeglądarki, np. z telefonu: działające wikilinki,
+Czytanie notatek z przeglądarki, np. z telefonu: działające linki,
 wyszukiwarka, graf, strony tagów. **Tylko do odczytu** — pisze się
 w Obsidianie na laptopie, a strona jest przebudowywana po `git pull`.
 
@@ -14,7 +14,10 @@ Wdrożona **poza kolejnością** z `CLAUDE.md`, na wyraźną prośbę.
 Strona ma być widokiem na istniejący vault, a nie drugim miejscem do pisania.
 Quartz jest zbudowany pod Obsidiana: rozwiązuje `[[link]]` po samej nazwie
 pliku, jak Obsidian (`markdownLinkResolution: shortest`), więc `[[castle]]`
-z `services/` trafia do `hosts/castle.md`.
+z `services/` trafia do `hosts/castle.md`. Od 2026-09-25 notatki używają
+względnych linków Markdown (żeby działały też na GitHubie) — Quartz
+rozwiązuje je poprawnie przy tym samym ustawieniu, a wikilinki dopisane
+przez pomyłkę nadal zadziałają na stronie.
 
 Odrzucone:
 - **An Otter Wiki** — rozwiązuje wikilinki jako ścieżki od korzenia
@@ -24,14 +27,14 @@ Odrzucone:
 - **`linuxserver/obsidian`** — pełny pulpit przez VNC, za ciężki na Pi.
 
 Na stałe **nic nie działa**: kontener Quartza tylko generuje HTML i znika,
-a pliki serwuje istniejący już [[caddy]]. Stały koszt RAM: 0.
+a pliki serwuje istniejący już [caddy](caddy.md). Stały koszt RAM: 0.
 
 ## Podstawowe dane
 
 | | |
 |---|---|
-| Host | [[castle]] |
-| URL | `https://quartz.home.figielak.dev`, pliki serwuje [[caddy]] (`file_server`) |
+| Host | [castle](../hosts/castle.md) |
+| URL | `https://quartz.home.figielak.dev`, pliki serwuje [caddy](caddy.md) (`file_server`) |
 | Port | brak — nie ma działającej usługi |
 | Treść | `/opt/homelab/docs` (repo), montowana tylko do odczytu |
 | Wynik | `/srv/homelab/data/quartz/public/` (właściciel UID 1000) |
@@ -64,7 +67,7 @@ Czas budowy strony (2026-09-25): laptop x86 **3 s**, `castle` **16 s**
 
 ## Zależności
 
-- **Zależy od:** [[caddy]] (serwowanie plików i TLS), [[adguard]] (nazwa),
+- **Zależy od:** [caddy](caddy.md) (serwowanie plików i TLS), [adguard](adguard.md) (nazwa),
   repo w `/opt/homelab` (treść).
 - **Zależy od niej:** nic.
 
@@ -138,4 +141,6 @@ sam `caddy reload` nie wystarczy.
 ## Log zmian
 
 - 2026-09-25 — stack utworzony, Quartz `v5.0.0`, strona z `docs/` pod
-  `quartz.home.figielak.dev`, serwowana przez [[caddy]]
+  `quartz.home.figielak.dev`, serwowana przez [caddy](caddy.md)
+- 2026-09-25 — wikilinki w `docs/` zamienione na względne linki Markdown;
+  po `git pull` sprawdzić linki między folderami (np. usługa → `castle`)

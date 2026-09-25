@@ -5,7 +5,7 @@ innych stron, a plik wideo lub audio ląduje na serwerze. Stamtąd pobierasz go
 przez przeglądarkę. Obsługuje playlisty, kanały i subskrypcje.
 
 Wdrożony **poza kolejnością** z `CLAUDE.md`, na wyraźną prośbę. Tak jak
-[[calibre-web]], bliżej mu do „danych masowych" z kroku 9.
+[calibre-web](calibre-web.md), bliżej mu do „danych masowych" z kroku 9.
 
 #usługa
 
@@ -19,8 +19,8 @@ robi to samo, ale wymaga SSH, a MeTube działa z telefonu.
 
 | | |
 |---|---|
-| Host | [[castle]] |
-| URL | `https://metube.home.figielak.dev` przez [[caddy]], **za `basic_auth`** |
+| Host | [castle](../hosts/castle.md) |
+| URL | `https://metube.home.figielak.dev` przez [caddy](caddy.md), **za `basic_auth`** |
 | Port | 8081 **wyłącznie wewnątrz sieci `proxy`**, nic na hoście |
 | Dane | `/srv/homelab/data/metube/` (właściciel `figielak`, UID 1000) |
 | Stack | `stacks/metube/` |
@@ -46,7 +46,7 @@ robi to samo, ale wymaga SSH, a MeTube działa z telefonu.
 
 ## Zależności
 
-- **Zależy od:** [[caddy]] (dostęp, TLS i logowanie), [[adguard]] (rozwiązywanie
+- **Zależy od:** [caddy](caddy.md) (dostęp, TLS i logowanie), [adguard](adguard.md) (rozwiązywanie
   nazwy), sieci `proxy`.
 - **Zależy od niej:** nic.
 

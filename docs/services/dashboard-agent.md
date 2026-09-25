@@ -1,6 +1,6 @@
 # Dashboard agent
 
-Wysyła statystyki [[castle]] na dashboard figielak.dev. Co 60 s robi POST
+Wysyła statystyki [castle](../hosts/castle.md) na dashboard figielak.dev. Co 60 s robi POST
 z JSON-em: zasoby hosta, DNS, ruch sieciowy i stan usług, a do części
 prywatnej monitory, kontenery i ostatni backup. Strona zapisuje dane
 w Firestore i pokazuje je w kaflach.
@@ -15,7 +15,7 @@ w Firestore i pokazuje je w kaflach.
   z cronem, ale zasada homelaba mówi: poza systemem bazowym wszystko w Dockerze.
 - **Źródła zamiast Beszela.** CPU, RAM, dysk, temperatura i ruch pochodzą
   wprost z `/proc`, `/sys` i `statvfs`. Nie trzeba konta w Beszelu ani znać
-  jego API. Stan usług bierze z `/metrics` [[uptime-kuma]], jedynego API
+  jego API. Stan usług bierze z `/metrics` [uptime-kuma](uptime-kuma.md), jedynego API
   Kumy 2.5.5 z dostępnością za 30 dni (sprawdzone w kodzie).
 
 **Sekcje publiczne** (`lab`, `dns`, `traffic`, `services`, decyzja z 2026-09-24)
@@ -34,7 +34,7 @@ spoza wzorca pomija i loguje, zamiast ją poprawiać.
 
 | | |
 |---|---|
-| Host | [[castle]] |
+| Host | [castle](../hosts/castle.md) |
 | Stack | `stacks/dashboard-agent/` |
 | Obraz | `python:3.14.7-alpine3.24` (arm64 potwierdzony w Docker Hub), skrypt z repo montowany `:ro`, bez builda |
 | Porty | żadne; `network_mode: host`, ale nic nie nasłuchuje |
@@ -49,12 +49,12 @@ w `.env`**, nie w repo ani w tej notatce. Lista zmiennych: `.env.example`.
 
 | Sekcja | Źródło | Uwagi |
 |---|---|---|
-| `lab` | `/proc/stat` (2 próbki co 5 s), `/proc/meminfo`, `thermal_zone0`, `/proc/uptime`, `statvfs` na katalogu danych (SSD) | `containers` z socket proxy [[beszel]] (tylko GET) |
+| `lab` | `/proc/stat` (2 próbki co 5 s), `/proc/meminfo`, `thermal_zone0`, `/proc/uptime`, `statvfs` na katalogu danych (SSD) | `containers` z socket proxy [beszel](beszel.md) (tylko GET) |
 | `dns` | AdGuard `/control/stats` | wymaga **retencji statystyk 7 dni**, wtedy API zwraca 168 kubełków godzinowych i „dziś” liczy się od północy w Polsce |
 | `traffic` | `/proc/net/dev` (`wlan0` + `eth0`) | **ruch samego Pi, nie całego domu**; „łącznie” od pierwszego startu agenta (`totalSince`) |
 | `services` | Kuma `/metrics` (API key) | `monitor_status`, `monitor_uptime_ratio` i `monitor_response_time_seconds` z `window="30d"` |
 | `monitors` 🔒 | ten sam odczyt Kumy co `services` | jeden wpis na usługę z paska na stronie |
-| `containers` 🔒 | socket proxy [[beszel]], `GET /containers/json?all=1` | `state` = `State` Dockera; `health` z `Status`: `(healthy)`, `(unhealthy)`, `(health: starting)` |
+| `containers` 🔒 | socket proxy [beszel](beszel.md), `GET /containers/json?all=1` | `state` = `State` Dockera; `health` z `Status`: `(healthy)`, `(unhealthy)`, `(health: starting)` |
 | `backup` 🔒 | plik `last-backup.json` w katalogu danych agenta | wysyłany dopiero, gdy plik istnieje (krok 6) |
 
 🔒 = sekcja prywatna.
@@ -135,9 +135,9 @@ i loguje `ustaw retencje statystyk na 7 dni`.
 
 - **Zależy od:**
   - strony (endpoint, Firestore),
-  - [[adguard]] (API na `127.0.0.1:3000`),
-  - [[uptime-kuma]] (przez [[caddy]]),
-  - socket proxy z [[beszel]] (`127.0.0.1:2375`).
+  - [adguard](adguard.md) (API na `127.0.0.1:3000`),
+  - [uptime-kuma](uptime-kuma.md) (przez [caddy](caddy.md)),
+  - socket proxy z [beszel](beszel.md) (`127.0.0.1:2375`).
 
   Awaria jednego źródła usuwa tylko jego sekcję.
 - **Zależy od niego:** tylko kafle na stronie.

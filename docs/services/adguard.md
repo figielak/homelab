@@ -1,7 +1,7 @@
 # AdGuard Home
 
 DNS dla całej sieci domowej z blokowaniem reklam i trackerów. Pełni też rolę
-wewnętrznego resolvera dla `*.home.figielak.dev` (DNS rewrite → [[castle]]).
+wewnętrznego resolvera dla `*.home.figielak.dev` (DNS rewrite → [castle](../hosts/castle.md)).
 
 #usługa #dns
 
@@ -16,8 +16,8 @@ serwera DHCP, żeby sensownie działać.
 
 | | |
 |---|---|
-| Host | [[castle]] |
-| Panel | `https://adguard.home.figielak.dev` przez [[caddy]]; nadal osiągalny też bezpośrednio na `http://192.168.10.10:3000` |
+| Host | [castle](../hosts/castle.md) |
+| Panel | `https://adguard.home.figielak.dev` przez [caddy](caddy.md); nadal osiągalny też bezpośrednio na `http://192.168.10.10:3000` |
 | Porty | 53 tcp/udp (DNS), 3000 tcp (panel) |
 | Dane | `/srv/homelab/data/adguard/{work,conf}` |
 | Stack | `stacks/adguard/` |
@@ -31,7 +31,7 @@ serwera DHCP, żeby sensownie działać.
 - **Zależy od niej:** każde urządzenie w sieci domowej, o ile router podaje
   `192.168.10.10` jako DNS. Także rozwiązywanie `*.home.figielak.dev`,
   czyli dostęp do wszystkich usług po nazwie — bez AdGuarda nie działa
-  ani [[caddy]], ani nic za nim.
+  ani [caddy](caddy.md), ani nic za nim.
 
 **`castle` celowo nie używa AdGuarda jako własnego resolvera.** Host zostaje
 przy zewnętrznym DNS z NetworkManagera. Inaczej powstaje pętla: kontener nie
@@ -134,4 +134,4 @@ dig @192.168.10.10 doubleclick.net +short    # powinno zwrocic 0.0.0.0 lub nic
 - 2026-09-21 — router przepięty: AdGuard jako podstawowy DNS dla całej sieci,
   `1.1.1.1` jako zapasowy; rozwiązywanie zweryfikowane przez `dig`
 - 2026-09-21 — dodany DNS rewrite `*.home.figielak.dev` → `192.168.10.10`;
-  panel wystawiony przez [[caddy]] pod `adguard.home.figielak.dev`
+  panel wystawiony przez [caddy](caddy.md) pod `adguard.home.figielak.dev`

@@ -21,8 +21,8 @@ odstawiony.
 
 | | |
 |---|---|
-| Host | [[castle]] |
-| URL | `https://mealie.home.figielak.dev` przez [[caddy]] |
+| Host | [castle](../hosts/castle.md) |
+| URL | `https://mealie.home.figielak.dev` przez [caddy](caddy.md) |
 | Port | 9000 **wyłącznie wewnątrz sieci `proxy`** — nic na hoście |
 | Dane | `/srv/homelab/data/mealie/` (właściciel `figielak`, UID 1000) |
 | Stack | `stacks/mealie/` |
@@ -45,7 +45,7 @@ przenoszeniu danych na NAS ta usługa musi zostać na dysku lokalnym.
 
 ## Zależności
 
-- **Zależy od:** [[caddy]] (dostęp po nazwie i TLS), [[adguard]] (rozwiązywanie
+- **Zależy od:** [caddy](caddy.md) (dostęp po nazwie i TLS), [adguard](adguard.md) (rozwiązywanie
   `mealie.home.figielak.dev`), sieci `proxy`.
 - **Zależy od niej:** nic.
 
@@ -133,4 +133,4 @@ Hasło do menedżera haseł, wpis „Homelab Mealie".
 ## Log zmian
 
 - 2026-09-21 — stack utworzony, obraz `v3.27.0`, SQLite, wystawiony przez
-  [[caddy]] pod `mealie.home.figielak.dev`
+  [caddy](caddy.md) pod `mealie.home.figielak.dev`

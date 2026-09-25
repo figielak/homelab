@@ -47,14 +47,14 @@ nazw. Powody:
 
 | | |
 |---|---|
-| Host | [[castle]] |
+| Host | [castle](../hosts/castle.md) |
 | Domena | `*.home.figielak.dev` |
 | Porty | 80 tcp, 443 tcp, 443 udp (HTTP/3) |
 | Dane | `/srv/homelab/data/caddy/{data,config}` |
 | Stack | `stacks/caddy/` |
 | Obraz | `homelab/caddy:2.11.4-cf0.2.4` (budowany lokalnie) |
 | Sieć | `proxy` (external) |
-| Pliki statyczne | `/srv/homelab/data/quartz` → `/srv/quartz` (ro), strona [[quartz]] |
+| Pliki statyczne | `/srv/homelab/data/quartz` → `/srv/quartz` (ro), strona [quartz](quartz.md) |
 | Sekrety | `CF_API_TOKEN` — menedżer haseł, „Homelab Cloudflare DNS token" |
 
 ## Zależności
@@ -63,7 +63,7 @@ nazw. Powody:
   w Cloudflare. Certyfikat da się wydać tylko z działającym internetem.
 - **Zależy od niej:** każda usługa wystawiana po nazwie. Caddy nie działa =
   nic nie jest dostępne przez HTTPS.
-- **AdGuard** ([[adguard]]) musi mieć DNS rewrite `*.home.figielak.dev`
+- **AdGuard** ([adguard](adguard.md)) musi mieć DNS rewrite `*.home.figielak.dev`
   → `192.168.10.10`, inaczej nazwy nie rozwiążą się w sieci lokalnej.
 
 Caddy i AdGuard są od siebie niezależne: awaria proxy nie psuje DNS w domu,
@@ -159,7 +159,7 @@ Po `up -d` sprawdź, że kontener faktycznie powstał od nowa:
 
 ### Pliki statyczne zamiast proxy
 
-Dla strony bez własnego serwera (np. [[quartz]]) Caddy serwuje pliki z dysku:
+Dla strony bez własnego serwera (np. [quartz](quartz.md)) Caddy serwuje pliki z dysku:
 mount w `docker-compose.yml` + `root` i `file_server` w bloku zamiast
 `reverse_proxy`. Montuj **katalog nadrzędny** wyniku, jeśli generator
 kasuje i tworzy katalog wyjściowy od nowa — to ta sama pułapka i-węzła co
@@ -186,12 +186,12 @@ ponownie.
   przez `rename`, tworząc nowy i-węzeł. Kontener zostawał wtedy ze starą
   treścią, a `caddy reload` raportował sukces po wczytaniu starego pliku —
   objaw jest mylący, bo wszystko wygląda na działające.
-  Wpadliśmy w to 2026-09-21 przy dodawaniu [[mealie]].
+  Wpadliśmy w to 2026-09-21 przy dodawaniu [mealie](mealie.md).
 - **`Brak takiej uslugi w homelabie` przy aktualnym `Caddyfile`** = Caddy nie
   wczytał zmian: pominięty `reload` albo `up -d`. Sprawdzenie:
   `docker compose exec caddy grep -c <nazwa> /etc/caddy/Caddyfile` (plik jest)
   i `docker compose ps` (od kiedy działa kontener). Trafiło się 2026-09-25
-  dwa razy: przy [[opengist]] i [[quartz]].
+  dwa razy: przy [opengist](opengist.md) i [quartz](quartz.md).
 
 ## Log zmian
 
@@ -201,4 +201,4 @@ ponownie.
 - 2026-09-21 — `Caddyfile` przeniesiony do `config/`, montowany jako katalog
   zamiast pojedynczego pliku (patrz „Znane problemy")
 - 2026-09-25 — mount `/srv/quartz` (ro) i pierwszy blok z `file_server`
-  zamiast `reverse_proxy`: statyczna strona [[quartz]]
+  zamiast `reverse_proxy`: statyczna strona [quartz](quartz.md)

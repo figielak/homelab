@@ -1,7 +1,7 @@
 # castle
 
 Jedyny host homelaba. Uruchamia wszystko: Docker, DNS, reverse proxy, usługi.
-Konto administracyjne opisane osobno: [[figielak]].
+Konto administracyjne opisane osobno: [figielak](figielak.md).
 
 #host
 
@@ -35,22 +35,22 @@ przed kolizjami.
 | 53 | tcp + udp | DNS | `AdGuardHome` | `*:53`, wszystkie interfejsy; `network_mode: host` |
 | 80 | tcp | Caddy | kontener `caddy` | przekierowanie na HTTPS |
 | 443 | tcp + udp | Caddy | kontener `caddy` | udp = HTTP/3 (QUIC) |
-| 2375 | tcp | Docker socket proxy | kontener `beszel-socket-proxy` | **tylko `127.0.0.1`**; tylko odczyt Docker API dla agenta [[beszel]] |
+| 2375 | tcp | Docker socket proxy | kontener `beszel-socket-proxy` | **tylko `127.0.0.1`**; tylko odczyt Docker API dla agenta [beszel](../services/beszel.md) |
 | 3000 | tcp | panel AdGuard | `AdGuardHome` | wystawiony jako `adguard.home.figielak.dev`; **nadal osiągalny bezpośrednio** |
 | 5353 | udp | mDNS | `avahi-daemon` | **nie koliduje z 53** |
 | 32929, 49401 | udp | mDNS | `avahi-daemon` | porty efemeryczne, zmienne |
-| 41641 | udp | Tailscale | `tailscaled` | IPv4 + IPv6, usługa systemowa; zobacz [[tailscale]] |
+| 41641 | udp | Tailscale | `tailscaled` | IPv4 + IPv6, usługa systemowa; zobacz [tailscale](../services/tailscale.md) |
 
 Docker nie zajmuje żadnego portu na hoście — `dockerd` słucha na gnieździe
 `/var/run/docker.sock`, nie na TCP. Kontenery aplikacyjne też nie publikują
 portów. Wyjątki:
-- AdGuard w trybie `host` (port 53), zobacz [[adguard]]
+- AdGuard w trybie `host` (port 53), zobacz [adguard](../services/adguard.md)
 - `beszel-socket-proxy` na `127.0.0.1:2375`: tylko localhost, bo agent
   w trybie `host` nie dosięgnie go po nazwie kontenera
 - `beszel-agent` w trybie `host` **nie zajmuje portu**, bo słucha na unix
-  sockecie. Zobacz [[beszel]].
+  sockecie. Zobacz [beszel](../services/beszel.md).
 - `dashboard-agent` w trybie `host` **nie zajmuje portu**, tylko wysyła dane
-  na zewnątrz. Zobacz [[dashboard-agent]].
+  na zewnątrz. Zobacz [dashboard-agent](../services/dashboard-agent.md).
 
 **`systemd-resolved` na tym hoście nie działa.** `/etc/resolv.conf` generuje
 NetworkManager i wskazuje wprost na 8.8.8.8 i 1.1.1.1. Nie ma stub listenera
@@ -150,11 +150,11 @@ Nie istnieją `/mnt/hdd` ani `/mnt/hdd/backups` — czekają na podłączenie dy
   SSH, który chroni szerzej (nie tylko ten host). #do-zrobienia
 - **Grupa `docker` = uprawnienia roota** — dostęp do `/var/run/docker.sock`
   pozwala zamontować `/` do kontenera. Przyjęte świadomie, bo `sudo docker`
-  przy pracy z compose'em jest nieużywalne. Zobacz [[figielak]].
+  przy pracy z compose'em jest nieużywalne. Zobacz [figielak](figielak.md).
 - **Brak jakiegokolwiek backupu, a dane nieodtwarzalne już są.** HDD nie jest
-  podłączony, więc krok 6 stoi. Od 2026-09-21 [[mealie]] trzyma przepisy
+  podłączony, więc krok 6 stoi. Od 2026-09-21 [mealie](../services/mealie.md) trzyma przepisy
   wpisane ręcznie — istnieją w jednym egzemplarzu, na jednym dysku.
-  Pad SSD = ich utrata. To samo dotyczy książek wgranych do [[calibre-web]].
+  Pad SSD = ich utrata. To samo dotyczy książek wgranych do [calibre-web](../services/calibre-web.md).
   **To najpoważniejsze otwarte ryzyko tego homelaba.**
   #do-zrobienia
 - **Host na Wi-Fi** — `eth0` odłączony. Każde zapytanie DNS w domu idzie przez

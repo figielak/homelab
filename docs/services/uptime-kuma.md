@@ -4,7 +4,7 @@ Monitoring dostępności. Co minutę sprawdza usługi i DNS, a przy awarii
 i powrocie wysyła push na telefon przez ntfy. Pilnuje też wygasania
 certyfikatu wildcard.
 
-Pierwsza połowa kroku 7. Druga to [[beszel]] (zasoby hosta).
+Pierwsza połowa kroku 7. Druga to [beszel](beszel.md) (zasoby hosta).
 
 #usługa #monitoring
 
@@ -20,8 +20,8 @@ nie widzą usług w sieci domowej.
 
 | | |
 |---|---|
-| Host | [[castle]] |
-| URL | `https://uptime-kuma.home.figielak.dev` przez [[caddy]] |
+| Host | [castle](../hosts/castle.md) |
+| URL | `https://uptime-kuma.home.figielak.dev` przez [caddy](caddy.md) |
 | Port | 3001 **wyłącznie wewnątrz sieci `proxy`**, nic na hoście |
 | Dane | `/srv/homelab/data/uptime-kuma/` (właściciel UID 1000) |
 | Stack | `stacks/uptime-kuma/` |
@@ -63,15 +63,15 @@ nie budził alarmu.
 |---|---|---|---|
 | Mealie | HTTP(s) | `https://mealie.home.figielak.dev`, alert o wygasaniu certyfikatu | Caddy + TLS + Mealie; certyfikat wildcard |
 | AdGuard panel | HTTP(s) | `https://adguard.home.figielak.dev` | panel AdGuarda przez Caddy |
-| Beszel | HTTP(s) | `https://beszel.home.figielak.dev` | hub [[beszel]] przez Caddy |
-| Calibre-Web | HTTP(s) | `https://calibre.home.figielak.dev` | [[calibre-web]] przez Caddy |
-| MeTube | HTTP(s) | `https://metube.home.figielak.dev`, HTTP Basic Auth (dane tylko w Kumie) | [[metube]] przez Caddy, razem z `basic_auth` |
-| Opengist | HTTP(s) | `https://opengist.home.figielak.dev/healthcheck` | [[opengist]] przez Caddy, razem z połączeniem do bazy |
-| Quartz | HTTP(s) | `https://quartz.home.figielak.dev` | [[quartz]]: mount w Caddy i niepusty `public/` (strona statyczna, 404 = brak builda) |
+| Beszel | HTTP(s) | `https://beszel.home.figielak.dev` | hub [beszel](beszel.md) przez Caddy |
+| Calibre-Web | HTTP(s) | `https://calibre.home.figielak.dev` | [calibre-web](calibre-web.md) przez Caddy |
+| MeTube | HTTP(s) | `https://metube.home.figielak.dev`, HTTP Basic Auth (dane tylko w Kumie) | [metube](metube.md) przez Caddy, razem z `basic_auth` |
+| Opengist | HTTP(s) | `https://opengist.home.figielak.dev/healthcheck` | [opengist](opengist.md) przez Caddy, razem z połączeniem do bazy |
+| Quartz | HTTP(s) | `https://quartz.home.figielak.dev` | [quartz](quartz.md): mount w Caddy i niepusty `public/` (strona statyczna, 404 = brak builda) |
 | Uptime Kuma | HTTP(s) | `https://uptime-kuma.home.figielak.dev` | panel Kumy przez Caddy; własnej śmierci nie zgłosi (patrz niżej) |
 | AdGuard DNS | DNS | `example.com`, resolver `192.168.10.10:53` | AdGuard odpowiada jako resolver domu |
 | AdGuard rewrite | DNS | `mealie.home.figielak.dev`, resolver `192.168.10.10:53` | działa rewrite `*.home.figielak.dev` |
-| Dashboard agent | Push | interwał 60 s, 2 ponowienia; URL w `.env` [[dashboard-agent]] | agent przestał wysyłać dane na stronę |
+| Dashboard agent | Push | interwał 60 s, 2 ponowienia; URL w `.env` [dashboard-agent](dashboard-agent.md) | agent przestał wysyłać dane na stronę |
 
 **Dlaczego osobny monitor rewrite'u:** kontener rozwiązuje nazwy przez resolver
 hosta (8.8.8.8/1.1.1.1), który dostaje odpowiedź z publicznego wildcardu
@@ -80,13 +80,13 @@ w AdGuardzie jest zepsuty.
 
 **Nowy stack = nowy monitor** tutaj i w tabeli.
 
-**Nazwy monitorów są częścią kontraktu.** [[dashboard-agent]] mapuje je
+**Nazwy monitorów są częścią kontraktu.** [dashboard-agent](dashboard-agent.md) mapuje je
 w `config.json` na usługi z prywatnego dashboardu. Zmiana nazwy monitora
 w UI wymaga zmiany w `config.json`, inaczej kropka na stronie zrobi się szara.
 
 ## Zależności
 
-- **Zależy od:** [[caddy]] (dostęp do panelu), sieci `proxy`, internetu
+- **Zależy od:** [caddy](caddy.md) (dostęp do panelu), sieci `proxy`, internetu
   (ntfy.sh, resolver hosta).
 - **Zależy od niej:** nic. Awaria Kumy oznacza brak alertów, ale żadna usługa
   od niej nie zależy.
@@ -94,7 +94,7 @@ w UI wymaga zmiany w `config.json`, inaczej kropka na stronie zrobi się szara.
 ## Co backupować
 
 Katalog `/srv/homelab/data/uptime-kuma/`: monitory, historia, powiadomienia.
-Przy SQLite obowiązuje to samo co w [[mealie]]: kopia działającej bazy przez
+Przy SQLite obowiązuje to samo co w [mealie](mealie.md): kopia działającej bazy przez
 `cp` może być niespójna. Zatrzymaj kontener albo użyj `sqlite3 .backup`.
 
 Utrata danych nie jest krytyczna: tracisz historię dostępności, a konfigurację
@@ -157,8 +157,8 @@ docker start mealie                    # push "up"
 ## Log zmian
 
 - 2026-09-24 — stack utworzony, obraz `2.5.5-slim-rootless`, wystawiony przez
-  [[caddy]] pod `uptime-kuma.home.figielak.dev`; 4 monitory, powiadomienia
+  [caddy](caddy.md) pod `uptime-kuma.home.figielak.dev`; 4 monitory, powiadomienia
   ntfy; test alertu (zatrzymanie Mealie) zaliczony; zużycie ~122 MiB
 - 2026-09-24 — dodany monitor Beszel
-- 2026-09-24 — API key i monitor Push dla [[dashboard-agent]]
+- 2026-09-24 — API key i monitor Push dla [dashboard-agent](dashboard-agent.md)
 - 2026-09-25 — monitor „Uptime Kuma” (panel przez Caddy) dla prywatnego dashboardu

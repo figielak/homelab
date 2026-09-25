@@ -1,6 +1,6 @@
 # figielak — konto administracyjne
 
-Konto administracyjne na hoście [[castle]]. **To nie jest notatka hosta** —
+Konto administracyjne na hoście [castle](castle.md). **To nie jest notatka hosta** —
 leży w `docs/hosts/` wyłącznie dlatego, że opisuje stan systemu. Do rozważenia
 przeniesienie albo scalenie z notatką hosta.
 
@@ -24,7 +24,7 @@ bezpośrednio do Pi). **Nie jest wymagane przy `sudo`**, bo
 
 Konsekwencja: klucz SSH jest **jedynym** poświadczeniem oddzielającym
 kogokolwiek od roota na tym hoście. Odłożone świadomie 2026-09-21 —
-szczegóły i alternatywa w długu technicznym [[castle]].
+szczegóły i alternatywa w długu technicznym [castle](castle.md).
 
 ## Klucz SSH
 
@@ -47,11 +47,11 @@ Brak pytania o hasło = brak passphrase. #do-zrobienia
 **Konto administracyjne musi powstać jako pierwsze na nowym sprzęcie**, żeby
 dostało UID 1000.
 
-Powód: część usług zapisuje dane jako UID 1000 (`PUID`/`PGID` w [[mealie]]),
+Powód: część usług zapisuje dane jako UID 1000 (`PUID`/`PGID` w [mealie](../services/mealie.md)),
 a backup odtwarza właściciela **numerycznie**. Konto z innym UID-em oznacza
 dane, do których kontener nie ma dostępu.
 
-Nie dotyczy to wszystkich usług — [[adguard]] działa w kontenerze jako root
+Nie dotyczy to wszystkich usług — [adguard](../services/adguard.md) działa w kontenerze jako root
 i jego dane należą do `0:0`. Przy odtwarzaniu sprawdź w notatce usługi,
 czyją własnością mają być pliki.
 

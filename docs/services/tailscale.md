@@ -26,7 +26,7 @@ portów na routerze ani publikować czegokolwiek w internecie.
 2. Publiczny wildcard w Cloudflare (`*.home → 192.168.10.10`, DNS only)
    zwraca adres z sieci domowej.
 3. Tailscale ma trasę do `192.168.10.10/32` przez `castle` i kieruje tam ruch tunelem.
-4. Ruch trafia na 443 do [[caddy]], a certyfikat wildcard pasuje, bo nazwa
+4. Ruch trafia na 443 do [caddy](caddy.md), a certyfikat wildcard pasuje, bo nazwa
    się nie zmienia.
 
 Dzięki temu **ani DNS, ani Caddy nie wymagały żadnej zmiany**. `/32` zamiast
@@ -36,7 +36,7 @@ Dzięki temu **ani DNS, ani Caddy nie wymagały żadnej zmiany**. `/32` zamiast
 
 | | |
 |---|---|
-| Host | [[castle]] |
+| Host | [castle](../hosts/castle.md) |
 | Uruchomienie | **na hoście, nie w Dockerze**: usługa systemd `tailscaled` (wyjątek dopuszczony w `CLAUDE.md`) |
 | Pakiet | `tailscale` z `pkgs.tailscale.com/stable/debian` (trixie), wersja `1.102.4` |
 | Adres w tailnecie | `100.93.181.44` |
@@ -145,7 +145,7 @@ Docker. To normalne.
 - **Laptop z `--accept-routes` w domu** idzie do `castle` tunelem zamiast
   bezpośrednio. Działa, ale z niepotrzebnym narzutem.
 - **Cały ruch zdalny idzie przez Wi-Fi `castle`.** To istniejący dług,
-  zobacz [[castle]].
+  zobacz [castle](../hosts/castle.md).
 
 ## Log zmian
 

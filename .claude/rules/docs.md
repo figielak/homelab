@@ -5,8 +5,9 @@ paths:
 
 # Dokumentacja
 
-Vault Obsidiana. Notatki linkowane wikilinkami `[[nazwa]]`, tagowane
-(`#usługa`, `#backup`, `#do-zrobienia`).
+Vault Obsidiana. Notatki linkowane **względnymi linkami Markdown**
+(`[castle](../hosts/castle.md)`), nie wikilinkami `[[nazwa]]` — wikilinki
+nie renderują się na GitHubie. Tagowane (`#usługa`, `#backup`, `#do-zrobienia`).
 
 **Nigdy nie wpisuj tu wartości sekretów.** `docs/` jest w Git i trafia na GitHuba.
 Zapisujesz najwyżej, gdzie sekretu szukać (nazwa wpisu w menedżerze haseł).

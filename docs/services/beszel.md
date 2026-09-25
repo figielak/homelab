@@ -1,8 +1,8 @@
 # Beszel
 
-Monitoring zasobów: CPU, RAM, dysk, sieć i temperatura [[castle]] oraz RAM
+Monitoring zasobów: CPU, RAM, dysk, sieć i temperatura [castle](../hosts/castle.md) oraz RAM
 i CPU każdego kontenera. Odpowiada na pytanie „dlaczego pada?” i „czy
-`mem_limit` są dobrze dobrane?”. Druga połowa kroku 7, obok [[uptime-kuma]]
+`mem_limit` są dobrze dobrane?”. Druga połowa kroku 7, obok [uptime-kuma](uptime-kuma.md)
 („czy działa?”).
 
 #usługa #monitoring
@@ -18,8 +18,8 @@ kontenerów. Netdata było alternatywą, ale zużywa znacznie więcej RAM.
 
 | | |
 |---|---|
-| Host | [[castle]] |
-| URL | `https://beszel.home.figielak.dev` przez [[caddy]] |
+| Host | [castle](../hosts/castle.md) |
+| URL | `https://beszel.home.figielak.dev` przez [caddy](caddy.md) |
 | Stack | `stacks/beszel/`, trzy kontenery |
 | Obrazy | `henrygd/beszel:0.20.0`, `henrygd/beszel-agent:0.20.0`, `lscr.io/linuxserver/socket-proxy:3.4.4-r0-ls98` (arm64 potwierdzony w Docker Hub) |
 | Porty | hub 8090 **tylko w sieci `proxy`**; proxy **`127.0.0.1:2375`**; agent żadnego (unix socket) |
@@ -48,7 +48,7 @@ hub (beszel, sieć proxy) ──unix socket──▶ agent (network_mode: host)
 
 ## Zależności
 
-- **Zależy od:** [[caddy]] (dostęp do panelu), sieci `proxy`, Dockera.
+- **Zależy od:** [caddy](caddy.md) (dostęp do panelu), sieci `proxy`, Dockera.
 - **Zależy od niej:** nic. Awaria Beszela oznacza brak metryk, ale żadna
   usługa od niego nie zależy.
 
@@ -58,7 +58,7 @@ hub (beszel, sieć proxy) ──unix socket──▶ agent (network_mode: host)
 ustawienia alertów i klucz SSH huba. Utrata nie jest krytyczna: tracisz
 historię, a konfigurację odtworzysz ręcznie w kilka minut. Jeśli odtworzysz
 hub bez backupu, wygeneruje **nowy klucz**, więc trzeba zaktualizować
-`BESZEL_AGENT_KEY` w `.env`. SQLite jak w [[mealie]]: backup przy zatrzymanym
+`BESZEL_AGENT_KEY` w `.env`. SQLite jak w [mealie](mealie.md): backup przy zatrzymanym
 kontenerze albo przez `sqlite3 .backup`.
 
 Katalogu `socket/` nie backupujemy, bo agent tworzy socket przy starcie.
@@ -120,13 +120,13 @@ Powiadomienia i alerty żyją w bazie huba, **nie w Git**. Ta sekcja to jedyna
 kopia poza bazą. Aktualizuj ją przy każdej zmianie w UI.
 
 - **Powiadomienia** (Settings → Notifications): `ntfy://ntfy.sh/<temat>`,
-  ten sam temat co w [[uptime-kuma]]. Nazwa tematu działa jak hasło:
+  ten sam temat co w [uptime-kuma](uptime-kuma.md). Nazwa tematu działa jak hasło:
   menedżer haseł, „Homelab ntfy”.
 - **Alerty dla `castle`** (ikona dzwonka na liście systemów):
 
 | Alert | Próg | Dlaczego |
 |---|---|---|
-| Disk | 80% | pobrania [[metube]] leżą na SSD systemu; pełny dysk to awaria całego hosta, a z nim DNS domu |
+| Disk | 80% | pobrania [metube](metube.md) leżą na SSD systemu; pełny dysk to awaria całego hosta, a z nim DNS domu |
 | Status | host przestał raportować | Kuma działa na tym samym hoście i jego śmierci nie zgłosi |
 
 ## Znane problemy i ograniczenia
@@ -146,6 +146,6 @@ kopia poza bazą. Aktualizuj ją przy każdej zmianie w UI.
 ## Log zmian
 
 - 2026-09-24 — stack utworzony (`0.20.0` + socket proxy `3.4.4`), wystawiony
-  przez [[caddy]] pod `beszel.home.figielak.dev`; ograniczenia proxy
+  przez [caddy](caddy.md) pod `beszel.home.figielak.dev`; ograniczenia proxy
   zweryfikowane (GET 200, POST i logi 403); temperatura i dysk widoczne
 - 2026-09-25 — powiadomienia ntfy, alerty Disk 80% i Status dla `castle`

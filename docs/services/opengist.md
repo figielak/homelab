@@ -19,8 +19,8 @@ bez działającego Opengista.
 
 | | |
 |---|---|
-| Host | [[castle]] |
-| URL | `https://opengist.home.figielak.dev` przez [[caddy]] |
+| Host | [castle](../hosts/castle.md) |
+| URL | `https://opengist.home.figielak.dev` przez [caddy](caddy.md) |
 | Git | `git clone https://opengist.home.figielak.dev/<user>/<gist>.git`, tylko HTTPS |
 | Port | 6157 **wyłącznie wewnątrz sieci `proxy`**, nic na hoście |
 | Dane | `/srv/homelab/data/opengist/` (właściciel `figielak`, UID 1000) |
@@ -47,7 +47,7 @@ push wymaga loginu i hasła albo tokenu dostępu (Settings → Access tokens).
 
 ## Zależności
 
-- **Zależy od:** [[caddy]] (dostęp po nazwie i TLS), [[adguard]] (rozwiązywanie
+- **Zależy od:** [caddy](caddy.md) (dostęp po nazwie i TLS), [adguard](adguard.md) (rozwiązywanie
   nazwy), sieci `proxy`.
 - **Zależy od niego:** nic.
 
@@ -55,7 +55,7 @@ push wymaga loginu i hasła albo tokenu dostępu (Settings → Access tokens).
 
 Cały katalog `/srv/homelab/data/opengist/` poza `opengist.index/`.
 
-**SQLite w trybie WAL.** Ta sama uwaga co przy [[mealie]]: kopia działającej bazy
+**SQLite w trybie WAL.** Ta sama uwaga co przy [mealie](mealie.md): kopia działającej bazy
 może być niespójna. Przy restic albo zatrzymujemy kontener, albo robimy
 `sqlite3 .backup` dla `opengist.db`. Repozytoria w `repos/` kopiują się bezpiecznie,
 dopóki nikt w tej chwili nie pushuje.
@@ -126,4 +126,4 @@ po starcie.
 ## Log zmian
 
 - 2026-09-25 — stack utworzony, obraz `1.15.2`, SSH wyłączony, wystawiony
-  przez [[caddy]] pod `opengist.home.figielak.dev`
+  przez [caddy](caddy.md) pod `opengist.home.figielak.dev`
