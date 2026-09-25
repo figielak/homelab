@@ -102,7 +102,8 @@ usłudze odnotuj tu przydział.
 | `uptime-kuma` | 256 MiB | ~122 MiB | działa od 2026-09-24 |
 | `beszel` (hub + agent + proxy) | 128 + 64 + 64 MiB | ~12 + 5 + 18 MiB | działa od 2026-09-24; **pomiar tuż po starcie**, do powtórzenia |
 | `dashboard-agent` | 64 MiB | ~13 MiB | działa od 2026-09-24 |
-| **Przydzielone razem** | **2,1 GiB** | **~550 MiB** | pozostaje ~1,3 GiB z dostępnych |
+| `calibre-web` | 256 MiB | — | w repo, niewdrożony; zmierzyć po starcie |
+| **Przydzielone razem** | **2,35 GiB** | **~550 MiB** | pozostaje ~1,05 GiB z dostępnych |
 
 Pomiary ze stanu ustalonego (po restarcie, z załadowanymi listami filtrów).
 Tuż po `docker compose up` wartości są o połowę niższe i wprowadzają w błąd.
@@ -140,7 +141,8 @@ Nie istnieją `/mnt/hdd` ani `/mnt/hdd/backups` — czekają na podłączenie dy
 - **Brak jakiegokolwiek backupu, a dane nieodtwarzalne już są.** HDD nie jest
   podłączony, więc krok 6 stoi. Od 2026-09-21 [[mealie]] trzyma przepisy
   wpisane ręcznie — istnieją w jednym egzemplarzu, na jednym dysku.
-  Pad SSD = ich utrata. **To najpoważniejsze otwarte ryzyko tego homelaba.**
+  Pad SSD = ich utrata. To samo dotyczy książek wgranych do [[calibre-web]].
+  **To najpoważniejsze otwarte ryzyko tego homelaba.**
   #do-zrobienia
 - **Host na Wi-Fi** — `eth0` odłączony. Każde zapytanie DNS w domu idzie przez
   Wi-Fi. Rezerwacja DHCP jest przypięta do MAC-a `wlan0`;
