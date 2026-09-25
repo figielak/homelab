@@ -123,14 +123,22 @@ Domyślne konto: `admin` / `admin123`.
 
 1. Przy pierwszym wejściu ustaw lokalizację biblioteki na `/books`.
 2. **Od razu zmień hasło admina.** Zapisz je w menedżerze haseł jako „Homelab Calibre-Web”.
-3. Włącz upload w ustawieniach administratora, w konfiguracji funkcji.
-   Domyślnie jest wyłączony.
+3. Włącz upload: Admin → Edit Basic Configuration → Feature Configuration →
+   Enable Uploads. **Najpierw wyczyść** pole Path to Kepubify E-Book Converter
+   (External binaries), inaczej zapis się nie uda. Szczegóły w znanych problemach.
+4. Na koncie użytkownika zaznacz Allow Uploads.
 
 ## Znane problemy i ograniczenia
 
 - **Brak konwersji formatów na ARM64.** Mod `universal-calibre` działa tylko na x86-64.
   Książki trzeba wgrywać od razu w formacie czytnika. Wróci po migracji na x86.
 - **SQLite tylko na dysku lokalnym.** Nie przenoś `library/` ani `config/` na NFS/SMB.
+- **„Kepubify binary not found” blokuje zapis Basic Configuration** (`0.6.27-ls402`).
+  Na Linuksie Calibre-Web akceptuje tylko pliki `kepubify-linux-64bit` i `kepubify-linux-32bit`
+  (`cps/binary_helper.py`). Obraz linuxserver instaluje program jako `/usr/bin/kepubify`
+  i przy pierwszym starcie sam wpisuje tę ścieżkę do `app.db`. Przez to każdy zapis
+  ustawień się wycofuje. Obejście: puste pole kepubify, czyli brak KEPUB dla Kobo.
+  Przy aktualizacji obrazu sprawdź, czy błąd poprawiono.
 - **Zablokowany admin** = reset hasła przez bezpośrednią edycję `app.db`
   (README obrazu linuxserver).
 
