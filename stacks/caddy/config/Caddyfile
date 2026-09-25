@@ -43,8 +43,11 @@
 		reverse_proxy beszel:8090
 	}
 
-	@calibre-web host calibre-web.home.figielak.dev
+	@calibre-web host calibre.home.figielak.dev
 	handle @calibre-web {
+		# Adres krotszy niz nazwa kontenera — celowo, dla wygody.
+		# Stack zostaje calibre-web, bo "calibre" to osobna aplikacja
+		# (desktopowy Calibre, obraz linuxserver/calibre).
 		reverse_proxy calibre-web:8083
 	}
 

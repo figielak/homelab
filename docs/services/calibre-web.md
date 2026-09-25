@@ -25,8 +25,9 @@ dopiero przy masowym zasilaniu biblioteki, np. z Syncthinga (krok 9).
 | | |
 |---|---|
 | Host | [[castle]] |
-| URL | `https://calibre-web.home.figielak.dev` przez [[caddy]] |
-| OPDS | `https://calibre-web.home.figielak.dev/opds` (login jak do UI) |
+| URL | `https://calibre.home.figielak.dev` przez [[caddy]] |
+| | Adres to `calibre`, a nie `calibre-web`. To wyjątek od reguły „nazwa = stack”, zrobiony dla wygody. |
+| OPDS | `https://calibre.home.figielak.dev/opds` (login jak do UI) |
 | Port | 8083 **wyłącznie wewnątrz sieci `proxy`**, nic na hoście |
 | Dane | `/srv/homelab/data/calibre-web/` (właściciel `figielak`, UID 1000) |
 | Stack | `stacks/calibre-web/` |
@@ -105,7 +106,7 @@ rm -rf /tmp/calibre-library
 Blok w `stacks/caddy/config/Caddyfile`:
 
 ```caddyfile
-@calibre-web host calibre-web.home.figielak.dev
+@calibre-web host calibre.home.figielak.dev
 handle @calibre-web {
 	reverse_proxy calibre-web:8083
 }
@@ -136,4 +137,4 @@ Domyślne konto: `admin` / `admin123`.
 ## Log zmian
 
 - 2026-09-25 — stack utworzony, obraz `0.6.27-ls402`, pusta biblioteka,
-  wystawiony przez [[caddy]] pod `calibre-web.home.figielak.dev`
+  wystawiony przez [[caddy]] pod `calibre.home.figielak.dev`
