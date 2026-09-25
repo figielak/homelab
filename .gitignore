@@ -7,3 +7,10 @@ data/
 # śmieci
 .DS_Store
 *.swp
+
+# Python
+__pycache__/
+
+# raporty audytu bezpieczeństwa — lista słabości, nigdy do repo
+security-audit-report.*
+security-audit-triage.md
