@@ -91,8 +91,17 @@ mostek SSD. Blokuje to backupy (krok 6) i dane masowe (krok 9).
 | Narzut `tailscaled` | ~60 MiB RSS (zmierzone 2026-09-24) |
 | Dostępne na kontenery | ~3,4 GiB (po odjęciu Dockera i `tailscaled`) |
 
-Suma `mem_limit` wszystkich stacków musi się w tym mieścić. Przy każdej nowej
-usłudze odnotuj tu przydział.
+Przy każdej nowej usłudze odnotuj tu przydział.
+
+**Suma `mem_limit` może lekko przekraczać dostępną pamięć — do ok. 4 GiB.**
+`mem_limit` to sufit, nie rezerwacja: chroni przed jednym zbuntowanym
+kontenerem, ale nie gwarantuje, że wszystkie naraz zmieszczą się w RAM.
+Świadomy overcommit (2026-09-25): aplikacje są używane pojedynczo,
+a realne zużycie (kolumna „Zmierzone”) jest ~3× niższe niż suma limitów.
+Ryzyko: kilka szczytów naraz → globalny OOM killer jądra, który sam wybiera
+ofiarę — może trafić AdGuarda (DNS całego domu). Wcześniej obowiązywała
+twarda reguła „suma limitów ≤ dostępny RAM”; porzucona, bo marnowała
+przydział na limity, których nic nie wykorzystuje.
 
 | Stack | `mem_limit` | Zmierzone | Status |
 |---|---|---|---|
@@ -104,7 +113,8 @@ usłudze odnotuj tu przydział.
 | `dashboard-agent` | 64 MiB | ~13 MiB | działa od 2026-09-24 |
 | `calibre-web` | 256 MiB | ~203 MiB | działa od 2026-09-25; **79% limitu**, do obserwacji |
 | `metube` | 512 MiB | ~65 MiB | działa od 2026-09-25; w spoczynku; **szczyt ~400 MiB** przy pobieraniu 1080p (78% limitu) |
-| **Przydzielone razem** | **2,85 GiB** | **~820 MiB** | pozostaje ~0,55 GiB z dostępnych |
+| `opengist` | 256 MiB | ~90 MiB | działa od 2026-09-25; pusta instancja, pomiar tuż po starcie |
+| **Przydzielone razem** | **3,10 GiB** | **~910 MiB** | ~0,3 GiB poniżej dostępnych; ~0,9 GiB do sufitu 4 GiB |
 
 Pomiary ze stanu ustalonego (po restarcie, z załadowanymi listami filtrów).
 Tuż po `docker compose up` wartości są o połowę niższe i wprowadzają w błąd.
@@ -234,3 +244,6 @@ Kolejność chronologiczna, najstarsze u góry.
   `calibre.home.figielak.dev`; bez portów na hoście; ~203 MiB RAM
 - 2026-09-25 — uruchomiony MeTube `2026.09.25` za Caddy (`basic_auth`) jako
   `metube.home.figielak.dev`; pobrania na SSD do czasu HDD; ~65 MiB RAM w spoczynku
+- 2026-09-25 — uruchomiony Opengist `1.15.2` za Caddy jako
+  `opengist.home.figielak.dev`; bez SSH, bez portów na hoście; ~90 MiB RAM
+- 2026-09-25 — dopuszczony lekki overcommit `mem_limit` (suma do ~4 GiB)

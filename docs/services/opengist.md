@@ -26,7 +26,7 @@ bez działającego Opengista.
 | Dane | `/srv/homelab/data/opengist/` (właściciel `figielak`, UID 1000) |
 | Stack | `stacks/opengist/` |
 | Obraz | `ghcr.io/thomiceli/opengist:1.15.2` (manifest ma `arm64`) |
-| RAM | `mem_limit` 256 MiB, `GOMEMLIMIT` 200 MiB; **do zmierzenia** |
+| RAM | `mem_limit` 256 MiB, `GOMEMLIMIT` 200 MiB; **zmierzone ~90 MiB** (2026-09-25, pusta instancja) |
 
 Zawartość katalogu danych:
 

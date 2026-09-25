@@ -66,6 +66,7 @@ nie budził alarmu.
 | Beszel | HTTP(s) | `https://beszel.home.figielak.dev` | hub [[beszel]] przez Caddy |
 | Calibre-Web | HTTP(s) | `https://calibre.home.figielak.dev` | [[calibre-web]] przez Caddy |
 | MeTube | HTTP(s) | `https://metube.home.figielak.dev`, HTTP Basic Auth (dane tylko w Kumie) | [[metube]] przez Caddy, razem z `basic_auth` |
+| Opengist | HTTP(s) | `https://opengist.home.figielak.dev/healthcheck` | [[opengist]] przez Caddy, razem z połączeniem do bazy |
 | Uptime Kuma | HTTP(s) | `https://uptime-kuma.home.figielak.dev` | panel Kumy przez Caddy; własnej śmierci nie zgłosi (patrz niżej) |
 | AdGuard DNS | DNS | `example.com`, resolver `192.168.10.10:53` | AdGuard odpowiada jako resolver domu |
 | AdGuard rewrite | DNS | `mealie.home.figielak.dev`, resolver `192.168.10.10:53` | działa rewrite `*.home.figielak.dev` |
