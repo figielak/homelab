@@ -31,7 +31,7 @@ flowchart TB
         caddy["Caddy<br/>:80 · :443"]
         quartz[("Quartz<br/>statyczny HTML")]
         subgraph proxy["sieć Docker: proxy"]
-            apps["Mealie · Uptime Kuma · Beszel<br/>Calibre-Web · MeTube · Opengist"]
+            apps["Mealie · Uptime Kuma · Beszel<br/>Calibre-Web · MeTube · Opengist<br/>Syncthing · :22000"]
         end
     end
 
@@ -48,9 +48,10 @@ flowchart TB
 
 Każda usługa jest dostępna pod `https://<usługa>.home.figielak.dev`. Kontenery
 aplikacyjne nie publikują portów na hoście, więc jedyną drogą do usług jest
-Caddy. Świadome wyjątki, wszystkie w `network_mode: host`: **AdGuard** (DNS :53
+Caddy. Świadome wyjątki w `network_mode: host`: **AdGuard** (DNS :53
 i panel :3000), **`beszel-agent`** i **`dashboard-agent`** — oba agenty nie
-słuchają na żadnym porcie. Pełny rejestr portów w
+słuchają na żadnym porcie. Osobny wyjątek: **Syncthing** publikuje :22000
+(protokół synchronizacji, nie HTTP). Pełny rejestr portów w
 [`docs/hosts/castle.md`](docs/hosts/castle.md#rejestr-portów).
 
 ## Od czego zacząć
@@ -101,6 +102,7 @@ dostęp daje jedynie Tailscale. Sekrety i raporty audytu nigdy nie trafiają do 
 | Calibre-Web | `calibre.home.figielak.dev` | [docs](docs/services/calibre-web.md) |
 | MeTube | `metube.home.figielak.dev` | [docs](docs/services/metube.md) |
 | Opengist | `opengist.home.figielak.dev` | [docs](docs/services/opengist.md) |
+| Syncthing | `syncthing.home.figielak.dev` (panel), sync na `:22000` | [docs](docs/services/syncthing.md) |
 | Quartz | `quartz.home.figielak.dev` (strona z `docs/`) | [docs](docs/services/quartz.md) |
 
 Domena wewnętrzna `*.home.figielak.dev` rozwiązywana przez AdGuard (DNS rewrite),

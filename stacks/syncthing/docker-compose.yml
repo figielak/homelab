@@ -1,0 +1,50 @@
+services:
+  syncthing:
+    # Manifest ma linux/arm64 (sprawdzone w Docker Hub 2026-10-13).
+    image: syncthing/syncthing:2.1.6
+    container_name: syncthing
+    # Nazwa urzadzenia widoczna u klientow. Bez tego bylby to losowy
+    # identyfikator kontenera, inny po kazdym odtworzeniu.
+    hostname: castle
+    restart: unless-stopped
+
+    # Binarny plik Go, kilka vaultow Obsidiana (tysiace malych plikow).
+    # Szacunek: ~50-100 MiB. Do potwierdzenia pomiarem w stanie ustalonym.
+    mem_limit: 256m
+
+    environment:
+      # Pliki naleza do figielak (UID 1000), jak w pozostalych stackach.
+      PUID: 1000
+      PGID: 1000
+      # Runtime Go nie widzi mem_limit — bez tego GC nie wie, ze ma sufit,
+      # i przy skanowaniu duzego folderu kontener dostaje OOM kill.
+      GOMEMLIMIT: 200MiB
+      # STGUIADDRESS celowo nieustawiony: obraz domyslnie slucha na
+      # 0.0.0.0:8384, dzieki czemu Caddy dosiega panelu w sieci proxy.
+
+    volumes:
+      # config/ (klucze = Device ID, config.xml, baza indeksu)
+      # oraz vaults/ (synchronizowane foldery).
+      - ${DATA_ROOT}/syncthing:/var/syncthing
+
+    # WYJATEK od zasady "kontenery aplikacyjne nie publikuja portow".
+    # Protokol synchronizacji to nie HTTP, wiec Caddy go nie przeniesie.
+    # Odnotowany w rejestrze portow w docs/hosts/castle.md.
+    # Panel (8384) idzie normalnie przez Caddy i portu na hoscie nie ma.
+    ports:
+      - "22000:22000/tcp"
+      - "22000:22000/udp"   # QUIC
+
+    healthcheck:
+      # Z dokumentacji obrazu (README-Docker.md).
+      test: curl -fkLsS -m 2 127.0.0.1:8384/rest/noauth/health | grep -o --color=never OK || exit 1
+      interval: 1m
+      timeout: 10s
+      retries: 3
+
+    networks:
+      - proxy
+
+networks:
+  proxy:
+    external: true

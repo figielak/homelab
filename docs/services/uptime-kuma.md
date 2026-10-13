@@ -67,6 +67,7 @@ nie budził alarmu.
 | Calibre-Web | HTTP(s) | `https://calibre.home.figielak.dev` | [calibre-web](calibre-web.md) przez Caddy |
 | MeTube | HTTP(s) | `https://metube.home.figielak.dev`, HTTP Basic Auth (dane tylko w Kumie) | [metube](metube.md) przez Caddy, razem z `basic_auth` |
 | Opengist | HTTP(s) | `https://opengist.home.figielak.dev/healthcheck` | [opengist](opengist.md) przez Caddy, razem z połączeniem do bazy |
+| Syncthing | HTTP(s) | `https://syncthing.home.figielak.dev/rest/noauth/health` | [syncthing](syncthing.md) przez Caddy; endpoint bez logowania. **Nie wykrywa** zerwanego połączenia z laptopem lub telefonem |
 | Quartz | HTTP(s) | `https://quartz.home.figielak.dev` | [quartz](quartz.md): mount w Caddy i niepusty `public/` (strona statyczna, 404 = brak builda) |
 | Uptime Kuma | HTTP(s) | `https://uptime-kuma.home.figielak.dev` | panel Kumy przez Caddy; własnej śmierci nie zgłosi (patrz niżej) |
 | AdGuard DNS | DNS | `example.com`, resolver `192.168.10.10:53` | AdGuard odpowiada jako resolver domu |

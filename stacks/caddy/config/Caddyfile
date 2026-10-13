@@ -68,6 +68,13 @@
 		reverse_proxy opengist:6157
 	}
 
+	@syncthing host syncthing.home.figielak.dev
+	handle @syncthing {
+		# Tylko panel. Sama synchronizacja idzie poza Caddy,
+		# portem 22000 opublikowanym na hoscie.
+		reverse_proxy syncthing:8384
+	}
+
 	@quartz host quartz.home.figielak.dev
 	handle @quartz {
 		# Nie proxy, tylko pliki z dysku — strone generuje stack quartz.

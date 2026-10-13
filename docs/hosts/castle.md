@@ -39,6 +39,7 @@ przed kolizjami.
 | 3000 | tcp | panel AdGuard | `AdGuardHome` | wystawiony jako `adguard.home.figielak.dev`; **nadal osiągalny bezpośrednio** |
 | 5353 | udp | mDNS | `avahi-daemon` | **nie koliduje z 53** |
 | 32929, 49401 | udp | mDNS | `avahi-daemon` | porty efemeryczne, zmienne |
+| 22000 | tcp + udp | Syncthing | kontener `syncthing` | protokół synchronizacji (udp = QUIC); **wyjątek od reguły „bez portów”**, zobacz [syncthing](../services/syncthing.md) |
 | 41641 | udp | Tailscale | `tailscaled` | IPv4 + IPv6, usługa systemowa; zobacz [tailscale](../services/tailscale.md) |
 
 Docker nie zajmuje żadnego portu na hoście — `dockerd` słucha na gnieździe
@@ -51,6 +52,9 @@ portów. Wyjątki:
   sockecie. Zobacz [beszel](../services/beszel.md).
 - `dashboard-agent` w trybie `host` **nie zajmuje portu**, tylko wysyła dane
   na zewnątrz. Zobacz [dashboard-agent](../services/dashboard-agent.md).
+- `syncthing` publikuje 22000 tcp/udp: synchronizacja to nie HTTP, więc Caddy
+  jej nie przeniesie. Panel idzie normalnie przez Caddy.
+  Zobacz [syncthing](../services/syncthing.md).
 
 **`systemd-resolved` na tym hoście nie działa.** `/etc/resolv.conf` generuje
 NetworkManager i wskazuje wprost na 8.8.8.8 i 1.1.1.1. Nie ma stub listenera
@@ -115,7 +119,8 @@ przydział na limity, których nic nie wykorzystuje.
 | `metube` | 512 MiB | ~65 MiB | działa od 2026-09-25; w spoczynku; **szczyt ~400 MiB** przy pobieraniu 1080p (78% limitu) |
 | `opengist` | 256 MiB | ~90 MiB | działa od 2026-09-25; pusta instancja, pomiar tuż po starcie |
 | `quartz` | — (1 GiB na czas buildu) | 0 na stałe | od 2026-09-25; kontener tylko na czas `run --rm`, nie wlicza się do sumy |
-| **Przydzielone razem** | **3,10 GiB** | **~910 MiB** | ~0,3 GiB poniżej dostępnych; ~0,9 GiB do sufitu 4 GiB |
+| `syncthing` | 256 MiB | — | od 2026-10-13; szacunek 50–100 MiB, **do zmierzenia** po dobie pracy |
+| **Przydzielone razem** | **3,35 GiB** | **~910 MiB** + syncthing | ~0,05 GiB poniżej dostępnych; ~0,65 GiB do sufitu 4 GiB |
 
 Pomiary ze stanu ustalonego (po restarcie, z załadowanymi listami filtrów).
 Tuż po `docker compose up` wartości są o połowę niższe i wprowadzają w błąd.
@@ -134,11 +139,11 @@ Kolejność z `CLAUDE.md`:
 | 6. Backup restic | zablokowane brakiem HDD |
 | 7. Monitoring | **gotowe** (2026-09-24): Uptime Kuma + Beszel |
 | 8. Tailscale | **gotowe** (2026-09-24), świadomie przed krokiem 7, bo krok 6 stoi przez brak sprzętu |
-| 9. Syncthing | nie rozpoczęte |
+| 9. Syncthing | **częściowo** (2026-10-13): vaulty Obsidiana na SSD, świadomie przed krokiem 6; dane masowe czekają na HDD |
 
 Istnieje `/srv/homelab/data/` z podkatalogami `adguard/`, `caddy/`, `mealie/`,
 `uptime-kuma/`, `beszel/`, `dashboard-agent/`, `calibre-web/`, `metube/`,
-`opengist/`, `quartz/`. Z tych danych `quartz/` jest w całości odtwarzalny z repo.
+`opengist/`, `quartz/`, `syncthing/`. Z tych danych `quartz/` jest w całości odtwarzalny z repo.
 Nie istnieją `/mnt/hdd` ani `/mnt/hdd/backups` — czekają na podłączenie dysku.
 
 ## Znane odstępstwa i dług techniczny
@@ -251,3 +256,6 @@ Kolejność chronologiczna, najstarsze u góry.
 - 2026-09-25 — dopuszczony lekki overcommit `mem_limit` (suma do ~4 GiB)
 - 2026-09-25 — Quartz `v5.0.0`: strona z `docs/` pod `quartz.home.figielak.dev`,
   serwowana przez Caddy (nowy mount `/srv/quartz`); obraz ~4,7 GB, bez stałego RAM
+- 2026-10-13 — uruchomiony Syncthing `2.1.6`: panel za Caddy jako
+  `syncthing.home.figielak.dev`, zajęte 22000 tcp/udp (wyjątek od reguły portów);
+  vaulty Obsidiana, krok 9 częściowo
